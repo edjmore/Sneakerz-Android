@@ -30,7 +30,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/shoe_item_miles"
+            android:id="@+id/shoe_item_dist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"

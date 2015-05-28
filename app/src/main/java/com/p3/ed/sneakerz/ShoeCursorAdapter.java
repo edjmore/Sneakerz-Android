@@ -53,7 +53,7 @@ public class ShoeCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         // Get references for all child views
         TextView nameView = (TextView) view.findViewById(R.id.shoe_item_name);
-        TextView milesView = (TextView) view.findViewById(R.id.shoe_item_miles);
+        TextView milesView = (TextView) view.findViewById(R.id.shoe_item_dist);
         ImageView smallImgView = (ImageView) view.findViewById(R.id.shoe_item_image);
 
         // Use a shoe object to populate the child views
@@ -74,5 +74,8 @@ public class ShoeCursorAdapter extends CursorAdapter {
         } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
         }
+
+        // Save shoe ID with view
+        view.setTag(shoe.get_id());
     }
 }

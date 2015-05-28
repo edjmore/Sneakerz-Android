@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 import java.sql.SQLException;
 
@@ -12,6 +13,7 @@ import java.sql.SQLException;
  * Created by Ed on 5/27/15.
  */
 public class DataSrc {
+    public static final String TAG = "DataSrc";
 
     private DbHelper mDbhelper;
     private SQLiteDatabase mDb;
@@ -83,5 +85,23 @@ public class DataSrc {
     public Cursor getAllShoes() {
         return mDb.query(DbHelper.TABLE_SHOES, ALL_SHOE_COLUMNS, null, null, null, null,
                 DbHelper.SHOES_MILES);
+    }
+
+    public Shoe getShoe(int _id) {
+        String selectClause = DbHelper.SHOES_ID + " = ?";
+        Cursor cursor = mDb.query(DbHelper.TABLE_SHOES, ALL_SHOE_COLUMNS, selectClause,
+                new String[]{String.valueOf(_id)}, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToNext();
+            int[] indices = DbHelper.getColIndices(cursor, DbHelper.TABLE_SHOES);
+
+
+            Log.d(TAG, "Shoe OK");
+            return Shoe.cursorToShoe(cursor, indices);
+        }
+
+        // Something went wrong
+        Log.e(TAG, "Shoe ERROR");
+        return null;
     }
 }
