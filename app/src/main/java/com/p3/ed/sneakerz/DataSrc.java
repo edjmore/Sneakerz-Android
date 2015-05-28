@@ -95,13 +95,10 @@ public class DataSrc {
             cursor.moveToNext();
             int[] indices = DbHelper.getColIndices(cursor, DbHelper.TABLE_SHOES);
 
-
-            Log.d(TAG, "Shoe OK");
             return Shoe.cursorToShoe(cursor, indices);
         }
 
         // Something went wrong
-        Log.e(TAG, "Shoe ERROR");
         return null;
     }
 }
