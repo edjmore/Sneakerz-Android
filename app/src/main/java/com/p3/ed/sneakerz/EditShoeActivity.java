@@ -329,14 +329,12 @@ public class EditShoeActivity extends Activity {
     }
 
     // Values to write back to the shoe database
-    private String mNewName = null;
-    private double mNewMiles = -1;
     private Uri mNewLrgImgUri, mNewSmlImgUri = null;
 
     @Override
     public void onDestroy() {
         // Don't want to leak database
-        if (mDataSrc != null) mDataSrc.close();
+        if (mDataSrc != null && !mDataSrc.isOpen()) mDataSrc.close();
 
         super.onDestroy();
     }
@@ -344,39 +342,17 @@ public class EditShoeActivity extends Activity {
     private final Runnable writeBack = new Runnable() {
         @Override
         public void run() {
-            // Write back the most recent values
-            String name;
-            double miles;
-            boolean dirty = false;
-            if (mNewName != null) {
-                dirty = true;
-                name = mNewName;
-            } else {
-                name = mShoe.name;
-            }
-            if (mNewMiles != -1) {
-                dirty = true;
-                miles = mNewMiles;
-            } else {
-                miles = mShoe.miles;
-            }
             // Create a new data source just in case the activity was destroyed
             mDataSrc = new DataSrc(getApplicationContext());
             try {
                 mDataSrc.open();
-
-                // Only update if any of these values were changed
-                if (dirty) {
-                    mDataSrc.updateShoe(name, miles, mShoe.get_id());
-                }
-
                 // Only write back if both URI's are not null
                 if (mNewSmlImgUri != null && mNewLrgImgUri != null) {
                     mDataSrc.setImageUris(mNewSmlImgUri, mNewLrgImgUri, mShoe.get_id());
                 }
 
                 // Close the database
-                if (mDataSrc != null) mDataSrc.close();
+                if (mDataSrc != null && !mDataSrc.isOpen()) mDataSrc.close();
 
                 // Let other activities know there is new data
                 Intent dbUpdated = new Intent();

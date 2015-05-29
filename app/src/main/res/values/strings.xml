@@ -9,4 +9,6 @@
     <string name="miles">miles</string>
     <string name="km">kilometers</string>
 
+    <string name="finish">Finish</string>
+
 </resources>

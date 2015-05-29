@@ -28,14 +28,18 @@ public class DataSrc {
 
     public void open() throws SQLException {
         mDb = mDbhelper.getWritableDatabase();
-        open = true;
+        mOpen = true;
     }
 
-    private boolean open;
+    private boolean mOpen;
+
+    public boolean isOpen() {
+        return mOpen;
+    }
 
     public void close() {
-        if (open) mDb.close();
-        open = false;
+        mDb.close();
+        mOpen = false;
     }
 
     public Shoe addShoe(String name) {
