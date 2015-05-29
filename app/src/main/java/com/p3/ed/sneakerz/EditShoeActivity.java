@@ -1,7 +1,10 @@
 package com.p3.ed.sneakerz;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -375,9 +378,17 @@ public class EditShoeActivity extends Activity {
                 // Close the database
                 if (mDataSrc != null) mDataSrc.close();
 
+                // Let other activities know there is new data
+                Intent dbUpdated = new Intent();
+                dbUpdated.setAction(DB_UPDATED);
+                sendBroadcast(dbUpdated);
+
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
             }
         }
     };
+
+    // The database has been updated
+    public static final String DB_UPDATED = "com.P3.ed.sneakerz.db_updated";
 }

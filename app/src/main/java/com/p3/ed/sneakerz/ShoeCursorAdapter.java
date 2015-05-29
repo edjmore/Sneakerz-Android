@@ -37,11 +37,6 @@ public class ShoeCursorAdapter extends CursorAdapter {
 
         // Get column indices so we can easily construct shoes
         mIndices = DbHelper.getColIndices(cursor, DbHelper.TABLE_SHOES);
-        String s = "";
-        for (int i = 0; i < mIndices.length; i++) {
-            s += mIndices[i];
-        }
-        Log.d(TAG, s);
     }
 
     @Override

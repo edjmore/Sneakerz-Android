@@ -1,9 +1,13 @@
 package com.p3.ed.sneakerz;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -16,6 +20,7 @@ import java.sql.SQLException;
  * Created by Ed on 5/27/15.
  */
 public class MainActivity extends Activity {
+    public static final String TAG = "MainActivity";
 
     private DataSrc mDataSrc;
 
@@ -40,6 +45,10 @@ public class MainActivity extends Activity {
         Button button = (Button) findViewById(R.id.main_add_shoe_button);
         // Add a new row to the database when button is clicked
         button.setOnClickListener(buttonClickListener);
+
+        // Register reciever
+        IntentFilter filter = new IntentFilter(EditShoeActivity.DB_UPDATED);
+        registerReceiver(broadcastReceiver, filter);
 
         // Open edit shoe activity when list item is clicked
         mShoeList.setOnItemClickListener(lvClickListener);
@@ -107,10 +116,23 @@ public class MainActivity extends Activity {
         mEditText.setText("");
     }
 
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Refresh views if data has been updated in another activity
+            if (intent.getAction() == EditShoeActivity.DB_UPDATED) {
+                Log.d(TAG, "UPDATED");
+                refreshViews();
+            }
+        }
+    };
+
     @Override
     public void onDestroy() {
-        // Need to make sure the database isn't leaked
+        // Need to make sure nothing is leaked
         if (mDataSrc != null) mDataSrc.close();
+        if (broadcastReceiver != null) unregisterReceiver(broadcastReceiver);
+
         super.onDestroy();
     }
 }
