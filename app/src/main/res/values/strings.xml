@@ -9,6 +9,7 @@
     <string name="miles">miles</string>
     <string name="km">kilometers</string>
 
+    <string name="add_run">+ Run</string>
     <string name="finish">Finish</string>
 
 </resources>

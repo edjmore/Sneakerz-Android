@@ -44,6 +44,8 @@ public class EditShoeActivity extends Activity {
 
     private Point screenSize;
 
+    public static final String SHOE_ID = "shoe_id";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,20 +84,56 @@ public class EditShoeActivity extends Activity {
         mImgView = (ImageView) findViewById(R.id.edit_shoe_large_image);
         mImgView.setOnClickListener(imgViewClickListener);
 
+        // Reciever for fragment manipulations
+        IntentFilter filter = new IntentFilter();
+        filter.addCategory(FRAG_ACTION);
+        registerReceiver(br, filter);
+
         // Populate views from shoe data
         if (mShoe != null) {
             refreshViews();
 
-            // TODO: Should load run fragment at start
-            NewRunFrag newRunFrag = new NewRunFrag();
-            Bundle args = new Bundle();
-            args.putInt(NewRunFrag.SHOE_ID, mShoe.get_id());
-            newRunFrag.setArguments(args);
+            // Load run history fragment for this shoe
+            RunHistFrag runHistFrag = new RunHistFrag();
+            // The most confusing way to initialize a variable
+            (mArgs = new Bundle()).putInt(SHOE_ID, mShoe.get_id());
+            runHistFrag.setArguments(mArgs);
 
             FragmentManager fm = getFragmentManager();
-            fm.beginTransaction().add(R.id.edit_shoe_frame, newRunFrag).commit();
+            fm.beginTransaction().add(R.id.edit_shoe_frame, runHistFrag).commit();
         }
     }
+
+    // Extra values passed to fragments
+    Bundle mArgs;
+
+    public static final String FRAG_ACTION = "com.p3.ed.sneakerz.category.frag_action";
+
+    public static final String ADD_RUN = "com.p3.ed.sneakerz.add_run";
+    public static final String VIEW_HIST = "com.p3.ed.sneakerz.view_hist";
+
+    BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            FragmentManager fm = getFragmentManager();
+
+            switch (intent.getAction()) {
+                case ADD_RUN:
+                    NewRunFrag newRunFrag = new NewRunFrag();
+                    newRunFrag.setArguments(mArgs);
+                    
+                    fm.beginTransaction().replace(R.id.edit_shoe_frame, newRunFrag).commit();
+                    break;
+
+                case VIEW_HIST:
+                    RunHistFrag runHistFrag = new RunHistFrag();
+                    runHistFrag.setArguments(mArgs);
+
+                    fm.beginTransaction().replace(R.id.edit_shoe_frame, runHistFrag).commit();
+                    break;
+            }
+        }
+    };
 
     // Give user options to set image when they click the image view
     private final View.OnClickListener imgViewClickListener = new View.OnClickListener() {

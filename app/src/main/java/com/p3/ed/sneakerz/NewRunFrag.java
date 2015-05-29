@@ -2,6 +2,7 @@ package com.p3.ed.sneakerz;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,14 +19,11 @@ import java.sql.SQLException;
 public class NewRunFrag extends Fragment {
     public static final String TAG = "NewRunFrag";
 
-    private Context mContext;
-
-    public static final String SHOE_ID = "shoe_id";
     private int mShoe_id;
 
     @Override
     public void setArguments(Bundle args) {
-        mShoe_id = args.getInt(SHOE_ID);
+        mShoe_id = args.getInt(EditShoeActivity.SHOE_ID);
     }
 
     private NumberPicker tens, ones, tenths;
@@ -33,9 +31,6 @@ public class NewRunFrag extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        // Activity is an extension of context
-        mContext = getActivity();
 
         // Initialize all number pickers
         tens = (NumberPicker) getView().findViewById(R.id.new_run_tens);
@@ -58,6 +53,12 @@ public class NewRunFrag extends Fragment {
                 // Write values to database on background thread
                 Thread t = new Thread(writeBack);
                 t.start();
+
+                // Replace this fragment with run history fragment
+                Intent viewHist = new Intent();
+                viewHist.addCategory(EditShoeActivity.FRAG_ACTION);
+                viewHist.setAction(EditShoeActivity.VIEW_HIST);
+                getActivity().sendBroadcast(viewHist);
             }
         });
     }
@@ -67,8 +68,8 @@ public class NewRunFrag extends Fragment {
     private final Runnable writeBack = new Runnable() {
         @Override
         public void run() {
-            // Get writable database
-            DataSrc dataSrc = new DataSrc(mContext);
+            // Activity is an extension of context
+            DataSrc dataSrc = new DataSrc(getActivity());
             try {
                 dataSrc.open();
                 // TODO: Put run data in seperate table
