@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
         button.setOnClickListener(buttonClickListener);
 
         // Register reciever
-        IntentFilter filter = new IntentFilter(EditShoeActivity.DB_UPDATED);
+        IntentFilter filter = new IntentFilter(ImageFrag.DB_UPDATED);
         registerReceiver(broadcastReceiver, filter);
 
         // Open edit shoe activity when list item is clicked
@@ -120,8 +120,7 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Refresh views if data has been updated in another activity
-            if (intent.getAction() == EditShoeActivity.DB_UPDATED) {
-                Log.d(TAG, "UPDATED");
+            if (intent.getAction() == ImageFrag.DB_UPDATED) {
                 refreshViews();
             }
         }

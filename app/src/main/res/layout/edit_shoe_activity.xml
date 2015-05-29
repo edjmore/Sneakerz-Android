@@ -5,13 +5,11 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/edit_shoe_large_image"
+    <FrameLayout
+        android:id="@+id/edit_shoe_img_frame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher" />
+        android:layout_weight="3" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="69"
-                android:textSize="40sp" />
+                android:textSize="32sp" />
 
             <TextView
                 android:id="@+id/edit_shoe_dist_desc"
