@@ -56,7 +56,6 @@ public class NewRunFrag extends Fragment {
 
                 // Replace this fragment with run history fragment
                 Intent viewHist = new Intent();
-                viewHist.addCategory(EditShoeActivity.FRAG_ACTION);
                 viewHist.setAction(EditShoeActivity.VIEW_HIST);
                 getActivity().sendBroadcast(viewHist);
             }
@@ -82,7 +81,7 @@ public class NewRunFrag extends Fragment {
                 sqle.printStackTrace();
             } finally {
                 // Avoid database leak
-                if (dataSrc != null && !dataSrc.isOpen()) {
+                if (dataSrc != null && dataSrc.isOpen()) {
                     dataSrc.close();
                 }
             }
@@ -92,7 +91,6 @@ public class NewRunFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "View Created");
         // Inflate layout and return
         return inflater.inflate(R.layout.new_run_frag, container, false);
     }

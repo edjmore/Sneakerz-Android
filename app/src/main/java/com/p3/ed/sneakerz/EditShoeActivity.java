@@ -86,7 +86,8 @@ public class EditShoeActivity extends Activity {
 
         // Reciever for fragment manipulations
         IntentFilter filter = new IntentFilter();
-        filter.addCategory(FRAG_ACTION);
+        filter.addAction(ADD_RUN);
+        filter.addAction(VIEW_HIST);
         registerReceiver(br, filter);
 
         // Populate views from shoe data
@@ -107,8 +108,6 @@ public class EditShoeActivity extends Activity {
     // Extra values passed to fragments
     Bundle mArgs;
 
-    public static final String FRAG_ACTION = "com.p3.ed.sneakerz.category.frag_action";
-
     public static final String ADD_RUN = "com.p3.ed.sneakerz.add_run";
     public static final String VIEW_HIST = "com.p3.ed.sneakerz.view_hist";
 
@@ -121,7 +120,7 @@ public class EditShoeActivity extends Activity {
                 case ADD_RUN:
                     NewRunFrag newRunFrag = new NewRunFrag();
                     newRunFrag.setArguments(mArgs);
-                    
+
                     fm.beginTransaction().replace(R.id.edit_shoe_frame, newRunFrag).commit();
                     break;
 
@@ -381,8 +380,9 @@ public class EditShoeActivity extends Activity {
 
     @Override
     public void onDestroy() {
-        // Don't want to leak database
+        // Don't want to leak database or receiver
         if (mDataSrc != null && !mDataSrc.isOpen()) mDataSrc.close();
+        if (br != null) unregisterReceiver(br);
 
         super.onDestroy();
     }
@@ -400,7 +400,7 @@ public class EditShoeActivity extends Activity {
                 }
 
                 // Close the database
-                if (mDataSrc != null && !mDataSrc.isOpen()) mDataSrc.close();
+                if (mDataSrc != null && mDataSrc.isOpen()) mDataSrc.close();
 
                 // Let other activities know there is new data
                 Intent dbUpdated = new Intent();

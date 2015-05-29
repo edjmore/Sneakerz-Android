@@ -14,21 +14,14 @@ public class ImageFrag extends Fragment {
     private ImageView mImgView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mImgView = (ImageView) getView().findViewById(R.id.image_frag_view);
-    }
-
-    @Override
     public void setArguments(Bundle args) {
-        
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
+        mImgView = (ImageView) getView().findViewById(R.id.image_frag_view);
     }
 }

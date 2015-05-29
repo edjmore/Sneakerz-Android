@@ -22,8 +22,8 @@ public class RunHistFrag extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // Set button click behavior
         Button addRun = (Button) getView().findViewById(R.id.run_hist_add_run);
@@ -32,7 +32,6 @@ public class RunHistFrag extends Fragment {
             public void onClick(View view) {
                 // Want to replace this fragment with the new run fragment
                 Intent addRun = new Intent();
-                addRun.addCategory(EditShoeActivity.FRAG_ACTION);
                 addRun.setAction(EditShoeActivity.ADD_RUN);
                 getActivity().sendBroadcast(addRun);
             }

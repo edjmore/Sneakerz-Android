@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
     @Override
     public void onDestroy() {
         // Need to make sure nothing is leaked
-        if (mDataSrc != null && !mDataSrc.isOpen()) mDataSrc.close();
+        if (mDataSrc != null && mDataSrc.isOpen()) mDataSrc.close();
         if (broadcastReceiver != null) unregisterReceiver(broadcastReceiver);
 
         super.onDestroy();
