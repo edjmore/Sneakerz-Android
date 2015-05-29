@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/shoe_item_image"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@color/white"
         android:scaleType="centerInside"
@@ -18,7 +18,7 @@
     <TextView
         android:id="@+id/shoe_item_name"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="2.5"
         android:gravity="center_vertical"
         android:padding="16dp"
