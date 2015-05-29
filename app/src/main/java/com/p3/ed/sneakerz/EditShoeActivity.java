@@ -126,8 +126,7 @@ public class EditShoeActivity extends Activity {
 
                 case VIEW_HIST:
                     // Want to update content
-                    Thread t = new Thread(refreshViews);
-                    t.start();
+                    refreshViews();
 
                     RunHistFrag runHistFrag = new RunHistFrag();
                     runHistFrag.setArguments(mArgs);
