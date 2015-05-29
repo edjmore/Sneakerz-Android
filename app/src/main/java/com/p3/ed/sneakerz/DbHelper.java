@@ -13,7 +13,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Database
     private static final String DB_SNEAKERZ = "sneakerz.db";
-    private static final int DB_VERSION = 6;
+    private static final int DB_VERSION = 12;
 
     // Tables
     public static final String TABLE_SHOES = "shoes";

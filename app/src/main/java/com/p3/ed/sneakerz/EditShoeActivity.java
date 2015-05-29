@@ -4,41 +4,41 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.util.Pair;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
 /**
  * Created by Ed on 5/27/15.
  */
 public class EditShoeActivity extends Activity {
+    public static final String TAG = "EditShoeActivity";
 
     private Shoe mShoe;
-    private DataSrc mData;
+    private DataSrc mDataSrc;
 
-    // Child views
-    private TextView mNameView, mMilesView;
-
-    // Path to images (null until the user chooses an image)
+    // Image view bitmap will be loaded from this URI
     private Uri mLargeImgUri;
-    private Uri mSmallImgUri;
-    public static final int IMG_REQUEST = 0;
 
-    // Loaded bitmap is displayed in the image view
-    private Bitmap mImgBmp;
-    private ImageView mImgView;
-
+    private Point screenSize;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,10 +49,15 @@ public class EditShoeActivity extends Activity {
         Intent intent = getIntent();
         int _id = intent.getIntExtra(DbHelper.SHOES_ID, 0);
 
-        mData = new DataSrc(this);
+        mDataSrc = new DataSrc(this);
         try {
-            mData.open();
-            mShoe = mData.getShoe(_id);
+            mDataSrc.open();
+            mShoe = mDataSrc.getShoe(_id);
+
+            // Check for images
+            Pair<Uri, Uri> uris = mShoe.getImageUris();
+            if (uris.second != null) mLargeImgUri = uris.second;
+
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
@@ -61,10 +66,10 @@ public class EditShoeActivity extends Activity {
         mNameView = (TextView) findViewById(R.id.edit_shoe_name);
         mMilesView = (TextView) findViewById(R.id.edit_shoe_dist);
 
-        // Populate views from shoe data
-        if (mShoe != null) {
-            refreshViews();
-        }
+        // Get screen size for later
+        screenSize = new Point();
+        Display display = getWindowManager().getDefaultDisplay();
+        display.getSize(screenSize);
 
         // For GUI updates
         mGuiHandler = new Handler();
@@ -72,9 +77,110 @@ public class EditShoeActivity extends Activity {
         // Inititialize image view reference
         mImgView = (ImageView) findViewById(R.id.edit_shoe_large_image);
         mImgView.setOnClickListener(imgViewClickListener);
+
+        // Populate views from shoe data
+        if (mShoe != null) {
+            refreshViews();
+        }
     }
 
-    private File getTempFile(String fileName) {
+    // Give user options to set image when they click the image view
+    private final View.OnClickListener imgViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            // Use the camera to take a picture...
+            Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // This path is for the large image
+            File temp = createPublicTempFile(mShoe.name + "_LARGE");
+            takePic.putExtra(MediaStore.EXTRA_OUTPUT, mLargeImgUri = Uri.fromFile(temp));
+
+            // ...or pick an image from the gallery
+            Intent pickImage = new Intent(Intent.ACTION_PICK);
+            pickImage.setType("image/*");
+
+            // Let user choose between options
+            Intent chooser = Intent.createChooser(pickImage, "Take a picture or choose an image.");
+            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePic});
+            startActivityForResult(chooser, IMG_REQUEST);
+        }
+    };
+
+    public static final int IMG_REQUEST = 0;
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Only proceed if everything went alright in the sub-activity
+        if (resultCode == Activity.RESULT_OK) {
+
+            // User either took a picture or chose an existing image
+            if (requestCode == IMG_REQUEST) {
+
+                // Data is null if the user took a photo with the camera
+                if (data == null) {
+                    // Image was stored at the URI we provided in the intent
+                }
+                // Data is not null if the user chose an image from the gallery
+                else {
+                    // Get the URI the selected image is stored at
+                    mLargeImgUri = data.getData();
+                }
+
+                // Handle the new image
+                Thread t = new Thread(handleNewImage);
+                t.start();
+            }
+        }
+    }
+
+    /*
+    When the user sets a new image we do the following:
+    1.) Load the image from URI to a bitmap
+    2.) Post the bitmap to the image view
+    3.) Store the bitmap to a public directory
+    4.) Create a smaller, round bitmap
+    5.) Store the smaller bitmap to a private directory
+    6.) Write the URI's of the small and large bitmaps to the shoe database
+     */
+    private final Runnable handleNewImage = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                // Load bitmap from URI
+                InputStream in = getContentResolver().openInputStream(mLargeImgUri);
+                mLargeImgBitmap = BitmapFactory.decodeStream(in);
+                // Crop the bitmap to fit screen
+                int bmpWidth = mLargeImgBitmap.getWidth();
+                int bmpHeight = mLargeImgBitmap.getHeight();
+                // Only crop if the image is larger than the screen
+                if (bmpWidth > screenSize.x) {
+                    // Preserve aspect ratio
+                    float scale = (float) screenSize.x / bmpWidth;
+                    mLargeImgBitmap = Bitmap.createScaledBitmap(mLargeImgBitmap,
+                            (int) (bmpWidth * scale), (int) (bmpHeight * scale), false);
+                }
+
+                // Display the bitmap
+                mGuiHandler.post(refreshViews);
+
+                // Store large bitmap to private directory
+                File temp = createPublicTempFile(mShoe.name + "_LARGE");
+                // Save the URI for later
+                mNewLrgImgUri = Uri.fromFile(temp);
+                FileOutputStream out = new FileOutputStream(temp);
+                // Write to file
+                mLargeImgBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+                // Create the smaller image and store it to a private directory
+                Thread t = new Thread(createSmallImgAndStore);
+                t.start();
+
+            } catch (FileNotFoundException fnfe) {
+                fnfe.printStackTrace();
+            }
+        }
+    };
+
+    private File createPublicTempFile(String fileName) {
         // Public image storage
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         String type = ".png";
@@ -89,70 +195,99 @@ public class EditShoeActivity extends Activity {
         return null;
     }
 
-    // Give user options to set image when they click the image view
-    private final View.OnClickListener imgViewClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            // Use the camera to take a picture...
-            Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // This path is for the large image
-            File temp = getTempFile(mShoe.name + "_LARGE");
-            takePic.putExtra(MediaStore.EXTRA_OUTPUT, mLargeImgUri = Uri.fromFile(temp));
-
-            // ...or pick an image from the gallery
-            Intent pickImage = new Intent(Intent.ACTION_PICK);
-            pickImage.setType("image/*");
-
-            // Let user choose between options
-            Intent chooser = Intent.createChooser(pickImage, "Take a picture or choose an image.");
-            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePic});
-            startActivityForResult(chooser, IMG_REQUEST);
+    private File createPrivateTempFile(String fileName) {
+        // TODO: Is this private storage?
+        File dir = getFilesDir();
+        String type = ".png";
+        try {
+            return File.createTempFile(fileName, type, dir);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
-    };
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Only proceed if everything went alright in the sub-activity
-        if (resultCode == Activity.RESULT_OK) {
-
-            // User either took a picture or chose an existing image
-            if (requestCode == IMG_REQUEST) {
-
-                // Data is null if the user took a photo with the camera
-                if (data == null) {
-                    // TODO: Store large image to our public directory
-                }
-                // Data is not null if the user chose an image from the gallery
-                else {
-                    // Get the URI the selected image is stored at
-                    mLargeImgUri = data.getData();
-                }
-
-                // Load bitmap in a new thread and post results
-                Thread t = new Thread(loadBitmapFromUri);
-                t.start();
-
-                // TODO: Create small image and store in our private directory
-                // TODO: Save URI's in shoe database
-            }
-        }
+        // Error
+        return null;
     }
 
-    // Load bitmap and then update views
-    private final Runnable loadBitmapFromUri = new Runnable() {
+    private final Runnable createSmallImgAndStore = new Runnable() {
         @Override
         public void run() {
-            try {
-                InputStream in = getContentResolver().openInputStream(mLargeImgUri);
-                mImgBmp = BitmapFactory.decodeStream(in);
+            // Do the image manipulation to get a round image
+            Bitmap smlImg = createSmallImage();
 
-                // Display the bitmap
-                mGuiHandler.post(refreshViews);
+            // Store the image to our private directory
+            File temp = createPrivateTempFile(mShoe.name + "_SMALL");
+            // Save the file URI for later
+            mNewSmlImgUri = Uri.fromFile(temp);
+            try {
+                FileOutputStream out = new FileOutputStream(temp);
+                // TODO: Test different amounts of compression
+                smlImg.compress(Bitmap.CompressFormat.PNG, 50, out);
+
             } catch (FileNotFoundException fnfe) {
                 fnfe.printStackTrace();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
+
+            // Write the new URI's to the database
+            Thread t = new Thread(writeBack);
+            t.start();
         }
     };
+
+    private Bitmap createSmallImage() {
+        Bitmap bmp = null;
+        try {
+            // Have to load from storage to get a mutable bitmap
+            InputStream in = getContentResolver().openInputStream(mNewLrgImgUri);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inMutable = true;
+            bmp = BitmapFactory.decodeStream(in, null, options);
+
+        } catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+        }
+
+        // Make the image square...
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        int newSide = Math.min(width, height);
+        bmp = Bitmap.createBitmap(bmp, width / 2 - newSide / 2, height / 2 - newSide / 2, newSide,
+                newSide);
+        // And make it a bit smaller if necessary (semi-arbitrarily)
+        int maxDim = (int) (screenSize.x / 5.1);
+        if (newSide > maxDim) {
+            bmp = Bitmap.createScaledBitmap(bmp, maxDim, maxDim, false);
+        }
+
+        // Proceed if there was no error
+        if (bmp != null) {
+            // Want largest circle within image
+            int side = bmp.getWidth();
+            int radius = side / 2;
+            Pair<Integer, Integer> center = new Pair(side / 2, side / 2);
+
+            // Hack to clear pixels beside those inside circle
+            int white = getResources().getColor(R.color.white);
+            // TODO: Use loop tiling for cache optimization
+            for (int y = 0; y < side; y++) {
+                for (int x = 0; x < side; x++) {
+
+                    // See if we are within circle radius
+                    double x2 = Math.pow(x - center.first, 2);
+                    double y2 = Math.pow(y - center.second, 2);
+                    int dist = (int) Math.pow(x2 + y2, 0.5);
+                    // Clear pixels outside of circle
+                    if (dist > radius) {
+                        bmp.setPixel(x, y, white);
+                    }
+                }
+            }
+        }
+
+        return bmp;
+    }
 
     // To refresh views from background threads
     private Handler mGuiHandler;
@@ -163,19 +298,86 @@ public class EditShoeActivity extends Activity {
         }
     };
 
+    // Child views
+    private TextView mNameView, mMilesView;
+
+    // Loaded bitmap is displayed in the image view
+    private Bitmap mLargeImgBitmap;
+    private ImageView mImgView;
+
     private void refreshViews() {
         mNameView.setText(mShoe.name);
         mMilesView.setText(String.valueOf(mShoe.miles));
 
         // Only refresh the image view if there is a user image to display
-        if (mImgBmp != null) {
-            mImgView.setImageBitmap(mImgBmp);
+        if (mLargeImgBitmap != null) {
+            mImgView.setImageBitmap(mLargeImgBitmap);
+        } else if (mLargeImgUri != null) {
+            // There is an image, but we need to load it
+            try {
+                InputStream in = getContentResolver().openInputStream(mLargeImgUri);
+                mLargeImgBitmap = BitmapFactory.decodeStream(in);
+
+                mImgView.setImageBitmap(mLargeImgBitmap);
+            } catch (FileNotFoundException fnfe) {
+                fnfe.printStackTrace();
+            }
         }
     }
 
+    // Values to write back to the shoe database
+    private String mNewName = null;
+    private double mNewMiles = -1;
+    private Uri mNewLrgImgUri, mNewSmlImgUri = null;
+
     @Override
     public void onDestroy() {
-        if (mData != null) mData.close();
+        // Don't want to leak database
+        if (mDataSrc != null) mDataSrc.close();
+
         super.onDestroy();
     }
+
+    private final Runnable writeBack = new Runnable() {
+        @Override
+        public void run() {
+            // Write back the most recent values
+            String name;
+            double miles;
+            boolean dirty = false;
+            if (mNewName != null) {
+                dirty = true;
+                name = mNewName;
+            } else {
+                name = mShoe.name;
+            }
+            if (mNewMiles != -1) {
+                dirty = true;
+                miles = mNewMiles;
+            } else {
+                miles = mShoe.miles;
+            }
+            // Create a new data source just in case the activity was destroyed
+            mDataSrc = new DataSrc(getApplicationContext());
+            try {
+                mDataSrc.open();
+
+                // Only update if any of these values were changed
+                if (dirty) {
+                    mDataSrc.updateShoe(name, miles, mShoe.get_id());
+                }
+
+                // Only write back if both URI's are not null
+                if (mNewSmlImgUri != null && mNewLrgImgUri != null) {
+                    mDataSrc.setImageUris(mNewSmlImgUri, mNewLrgImgUri, mShoe.get_id());
+                }
+
+                // Close the database
+                if (mDataSrc != null) mDataSrc.close();
+
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+        }
+    };
 }

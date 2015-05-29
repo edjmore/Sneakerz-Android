@@ -49,4 +49,10 @@ public class Shoe {
 
         return shoe;
     }
+
+    @Override
+    public String toString() {
+        return "Name: " + this.name + '\n' + "Miles: " + this.miles + '\n' + "LrgURI: " +
+                this.largeImgUri + " SmlURI: " + this.smallImgUri + '\n' + "ID: " + this._id;
+    }
 }

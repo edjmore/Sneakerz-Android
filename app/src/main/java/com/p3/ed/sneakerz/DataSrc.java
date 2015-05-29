@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.util.Log;
 
 import java.sql.SQLException;
 
@@ -29,10 +28,14 @@ public class DataSrc {
 
     public void open() throws SQLException {
         mDb = mDbhelper.getWritableDatabase();
+        open = true;
     }
 
+    private boolean open;
+
     public void close() {
-        mDb.close();
+        if (open) mDb.close();
+        open = false;
     }
 
     public Shoe addShoe(String name) {

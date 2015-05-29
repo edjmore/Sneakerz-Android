@@ -48,6 +48,13 @@ public class MainActivity extends Activity {
         refreshViews();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        refreshViews();
+    }
+
     private final View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
