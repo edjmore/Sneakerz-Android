@@ -20,7 +20,7 @@
         <EditText
             android:id="@+id/main_shoe_name_input"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="3"
             android:hint="@string/shoe_name_input_hint" />
 
@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_shoe"
-            android:textSize="40sp" />
+            android:textSize="32sp" />
     </LinearLayout>
 
 </LinearLayout>

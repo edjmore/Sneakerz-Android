@@ -1,6 +1,7 @@
 package com.p3.ed.sneakerz;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -84,6 +85,15 @@ public class EditShoeActivity extends Activity {
         // Populate views from shoe data
         if (mShoe != null) {
             refreshViews();
+
+            // TODO: Should load run fragment at start
+            NewRunFrag newRunFrag = new NewRunFrag();
+            Bundle args = new Bundle();
+            args.putInt(NewRunFrag.SHOE_ID, mShoe.get_id());
+            newRunFrag.setArguments(args);
+
+            FragmentManager fm = getFragmentManager();
+            fm.beginTransaction().add(R.id.edit_shoe_frame, newRunFrag).commit();
         }
     }
 
