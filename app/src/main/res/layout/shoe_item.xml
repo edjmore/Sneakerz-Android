@@ -13,7 +13,7 @@
         android:layout_weight="1"
         android:background="@color/white"
         android:scaleType="centerInside"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/def_sneakers" />
 
     <TextView
         android:id="@+id/shoe_item_name"

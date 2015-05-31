@@ -2,8 +2,10 @@ package com.p3.ed.sneakerz;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -67,9 +69,8 @@ public class ImageFrag extends Fragment {
         // Get screen size for later
         getActivity().getWindowManager().getDefaultDisplay().getSize(screenSize = new Point());
 
-        // URI may have been passed in bundle
+        // Load the image on background thread and display
         if (mLargeImgUri != null) {
-            // Load the image on background thread and display
             Thread t = new Thread(loadAndDisplay);
             t.start();
         }
