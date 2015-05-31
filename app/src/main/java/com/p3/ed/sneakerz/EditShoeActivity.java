@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,7 +21,7 @@ import java.text.DecimalFormat;
 /**
  * Created by Ed on 5/27/15.
  */
-public class EditShoeActivity extends Activity {
+public class EditShoeActivity extends ActionBarActivity {
     public static final String TAG = "EditShoeActivity";
 
     private Shoe mShoe;
@@ -77,6 +80,13 @@ public class EditShoeActivity extends Activity {
         RunHistFrag runHistFrag = new RunHistFrag();
         runHistFrag.setArguments(mArgs);
         fm.beginTransaction().add(R.id.edit_shoe_frame, runHistFrag).commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.edit_shoe_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     // Extra values passed to fragments

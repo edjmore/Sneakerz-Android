@@ -15,9 +15,12 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.DragEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -34,7 +37,7 @@ import java.sql.SQLException;
 /**
  * Created by Ed on 5/27/15.
  */
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
     public static final String TAG = "MainActivity";
 
     private DataSrc mDataSrc;
@@ -85,6 +88,13 @@ public class MainActivity extends Activity {
 
         // Load data into list view
         refreshViews();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     public static final String DEF_IMG_LRG = "def_img_lrg";
