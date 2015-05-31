@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.sql.SQLException;
@@ -131,6 +132,20 @@ public class EditShoeActivity extends Activity {
         // Format distance to one decimal place
         DecimalFormat df = new DecimalFormat("0.0");
         mMilesView.setText(df.format(mShoe.miles));
+    }
+
+    public void deleteShoe(View view) {
+        DataSrc dataSrc = new DataSrc(this);
+        try {
+            dataSrc.open();
+            dataSrc.deleteShoe(mShoe.get_id());
+
+            // Go back to main activity
+            Intent main = new Intent(this, MainActivity.class);
+            startActivity(main);
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
     }
 
     @Override
