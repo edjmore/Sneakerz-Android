@@ -35,11 +35,11 @@ public class ViewShoeActivity extends ActionBarActivity {
 
     public static final String KEY_SHOE_ID = "shoe_id";
     private Shoe mShoe;
-    private Uri tempUri;
+    private Uri mTempUri;
 
     public static final String ACTION_ADD_RUN = "com.p3.ed.action.ADD_RUN",
             ACTION_VIEW_HIST = "com.p3.ed.action.VIEW_HIST";
-    private final BroadcastReceiver br = new BroadcastReceiver() {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             FragmentManager fm = getFragmentManager();
@@ -58,15 +58,17 @@ public class ViewShoeActivity extends ActionBarActivity {
         }
     };
 
-    private final Handler guiHandler = new Handler();
-    private final Runnable refreshViews = new Runnable() {
+    private Bitmap mImgBmp;
+    private final Handler mGuiHandler = new Handler();
+    private final Runnable mRefreshImgView = new Runnable() {
         @Override
         public void run() {
-            refreshViews();
+            ImageView imgView = (ImageView) findViewById(R.id.view_shoe_image);
+            imgView.setImageBitmap(mImgBmp);
         }
     };
 
-    private final View.OnClickListener ivClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mIvClkListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Intent pickImage = new Intent(Intent.ACTION_PICK);
@@ -80,7 +82,7 @@ public class ViewShoeActivity extends ActionBarActivity {
                 ioe.printStackTrace();
             }
             Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, tempUri = Uri.fromFile(temp));
+            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, mTempUri = Uri.fromFile(temp));
 
             Intent chooser = Intent.createChooser(pickImage,
                     "Choose an image or take a picture.");
@@ -89,27 +91,30 @@ public class ViewShoeActivity extends ActionBarActivity {
         }
     };
 
-    private final Runnable handleNewImage = new Runnable() {
+    private final Runnable mHandleNewImage = new Runnable() {
         @Override
         public void run() {
             File pubDir =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File temp = null;
             try {
-                InputStream in = getContentResolver().openInputStream(tempUri);
-                Bitmap bitmap = BitmapFactory.decodeStream(in);
+                InputStream in = getContentResolver().openInputStream(mTempUri);
+                mImgBmp = BitmapFactory.decodeStream(in);
                 // Crop image if larger than screen
                 Point screenSize = new Point();
                 getWindowManager().getDefaultDisplay().getSize(screenSize);
-                if (bitmap.getWidth() > screenSize.x) {
-                    Float scale = (float) screenSize.x / bitmap.getWidth();
-                    bitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * scale),
-                            (int) (bitmap.getHeight() * scale), false);
+                if (mImgBmp.getWidth() > screenSize.x) {
+                    Float scale = (float) screenSize.x / mImgBmp.getWidth();
+                    mImgBmp = Bitmap.createScaledBitmap(mImgBmp, (int) (mImgBmp.getWidth() * scale),
+                            (int) (mImgBmp.getHeight() * scale), false);
                 }
+
+                // Post image to GUI before proceeding
+                mGuiHandler.post(mRefreshImgView);
 
                 temp = File.createTempFile(mShoe.name, ".png", pubDir);
                 FileOutputStream out = new FileOutputStream(temp);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 75, out);
+                mImgBmp.compress(Bitmap.CompressFormat.PNG, 100, out);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
@@ -119,11 +124,10 @@ public class ViewShoeActivity extends ActionBarActivity {
             try {
                 dataSrc.open();
                 dataSrc.setImageUri(finalUri, mShoe.getId());
-
-                mShoe = dataSrc.getShoe(mShoe.getId());
-                guiHandler.post(refreshViews);
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
+            } finally {
+                dataSrc.close();
             }
         }
     };
@@ -148,7 +152,7 @@ public class ViewShoeActivity extends ActionBarActivity {
         }
 
         ImageView imageView = (ImageView) findViewById(R.id.view_shoe_image);
-        imageView.setOnClickListener(ivClickListener);
+        imageView.setOnClickListener(mIvClkListener);
 
         FragmentManager fm = getFragmentManager();
         RunHistFrag runHistFrag = new RunHistFrag();
@@ -157,7 +161,7 @@ public class ViewShoeActivity extends ActionBarActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_ADD_RUN);
         filter.addAction(ACTION_VIEW_HIST);
-        registerReceiver(br, filter);
+        registerReceiver(mReceiver, filter);
     }
 
     @Override
@@ -174,17 +178,17 @@ public class ViewShoeActivity extends ActionBarActivity {
                 // User captured a new image
             } else {
                 // User picked an existing image
-                tempUri = data.getData();
+                mTempUri = data.getData();
             }
 
-            Thread t = new Thread(handleNewImage);
+            Thread t = new Thread(mHandleNewImage);
             t.start();
         }
     }
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(br);
+        unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 
