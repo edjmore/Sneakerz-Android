@@ -6,9 +6,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -54,6 +58,76 @@ public class ViewShoeActivity extends ActionBarActivity {
         }
     };
 
+    private final Handler guiHandler = new Handler();
+    private final Runnable refreshViews = new Runnable() {
+        @Override
+        public void run() {
+            refreshViews();
+        }
+    };
+
+    private final View.OnClickListener ivClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent pickImage = new Intent(Intent.ACTION_PICK);
+            pickImage.setType("image/*");
+
+            File temp = null;
+            try {
+                temp = File.createTempFile(mShoe.name, ".png", Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, tempUri = Uri.fromFile(temp));
+
+            Intent chooser = Intent.createChooser(pickImage,
+                    "Choose an image or take a picture.");
+            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{captureImage});
+            startActivityForResult(chooser, 0);
+        }
+    };
+
+    private final Runnable handleNewImage = new Runnable() {
+        @Override
+        public void run() {
+            File pubDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File temp = null;
+            try {
+                InputStream in = getContentResolver().openInputStream(tempUri);
+                Bitmap bitmap = BitmapFactory.decodeStream(in);
+                // Crop image if larger than screen
+                Point screenSize = new Point();
+                getWindowManager().getDefaultDisplay().getSize(screenSize);
+                if (bitmap.getWidth() > screenSize.x) {
+                    Float scale = (float) screenSize.x / bitmap.getWidth();
+                    bitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * scale),
+                            (int) (bitmap.getHeight() * scale), false);
+                }
+
+                temp = File.createTempFile(mShoe.name, ".png", pubDir);
+                FileOutputStream out = new FileOutputStream(temp);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 75, out);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            Uri finalUri = Uri.fromFile(temp);
+
+            DataSrc dataSrc = new DataSrc(getApplicationContext());
+            try {
+                dataSrc.open();
+                dataSrc.setImageUri(finalUri, mShoe.getId());
+
+                mShoe = dataSrc.getShoe(mShoe.getId());
+                guiHandler.post(refreshViews);
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,31 +143,12 @@ public class ViewShoeActivity extends ActionBarActivity {
             refreshViews();
         } catch (SQLException sqle) {
             sqle.printStackTrace();
+        } finally {
+            if (dataSrc.isOpen()) dataSrc.close();
         }
 
-        // TODO: Replace with more familiar UX for editing image
         ImageView imageView = (ImageView) findViewById(R.id.view_shoe_image);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent pickImage = new Intent(Intent.ACTION_PICK);
-                pickImage.setType("image/*");
-
-                File temp = null;
-                try {
-                    temp = File.createTempFile(mShoe.name, ".png");
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, tempUri = Uri.fromFile(temp));
-
-                Intent chooser = Intent.createChooser(pickImage,
-                        "Choose an image or take a picture.");
-                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{captureImage});
-                startActivityForResult(chooser, 0);
-            }
-        });
+        imageView.setOnClickListener(ivClickListener);
 
         FragmentManager fm = getFragmentManager();
         RunHistFrag runHistFrag = new RunHistFrag();
@@ -122,32 +177,8 @@ public class ViewShoeActivity extends ActionBarActivity {
                 tempUri = data.getData();
             }
 
-            File pubDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File temp = null;
-            try {
-                InputStream in = getContentResolver().openInputStream(tempUri);
-
-                temp = File.createTempFile(mShoe.name, ".png", pubDir);
-                FileOutputStream out = new FileOutputStream(temp);
-
-                byte[] bytes = new byte[in.available()];
-                in.read(bytes);
-                out.write(bytes);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-            Uri finalUri = Uri.fromFile(temp);
-
-            DataSrc dataSrc = new DataSrc(this);
-            try {
-                dataSrc.open();
-                dataSrc.setImageUri(finalUri, mShoe.getId());
-
-                mShoe = dataSrc.getShoe(mShoe.getId());
-                refreshViews();
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-            }
+            Thread t = new Thread(handleNewImage);
+            t.start();
         }
     }
 

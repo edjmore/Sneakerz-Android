@@ -11,7 +11,7 @@ import java.io.File;
  */
 public class Shoe {
     private static final String TAG = "Shoe";
-    
+
     public String name; // not null
     public double miles;
 

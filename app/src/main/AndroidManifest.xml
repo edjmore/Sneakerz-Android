@@ -9,7 +9,6 @@
         android:allowBackup="true"
         android:icon="@mipmap/def_sneakers"
         android:label="@string/app_name"
-        android:logo="@mipmap/def_sneakers"
         android:theme="@style/AppTheme">
 
         <activity
