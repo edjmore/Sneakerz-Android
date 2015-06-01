@@ -39,20 +39,33 @@ public class ViewShoeActivity extends ActionBarActivity {
 
     public static final String ACTION_ADD_RUN = "com.p3.ed.action.ADD_RUN",
             ACTION_VIEW_HIST = "com.p3.ed.action.VIEW_HIST";
+    public static final String ACTION_DB_UPDATED = "com.p3.ed.action.DP_UPDATED";
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             FragmentManager fm = getFragmentManager();
+            Bundle args = new Bundle();
+            args.putInt(KEY_SHOE_ID, mShoe.getId());
+
             switch (intent.getAction()) {
                 case ACTION_ADD_RUN:
                     NewRunFrag newRunFrag = new NewRunFrag();
+                    newRunFrag.setArguments(args);
                     fm.beginTransaction().replace(R.id.view_shoe_frag_container, newRunFrag)
                             .commit();
                     break;
+
                 case ACTION_VIEW_HIST:
                     RunHistFrag runHistFrag = new RunHistFrag();
+                    runHistFrag.setArguments(args);
                     fm.beginTransaction().replace(R.id.view_shoe_frag_container, runHistFrag)
                             .commit();
+                    break;
+
+                case ACTION_DB_UPDATED:
+                    loadShoeData();
+                    refreshViews();
                     break;
             }
         }
@@ -161,6 +174,7 @@ public class ViewShoeActivity extends ActionBarActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_ADD_RUN);
         filter.addAction(ACTION_VIEW_HIST);
+        filter.addAction(ACTION_DB_UPDATED);
         registerReceiver(mReceiver, filter);
     }
 
@@ -190,6 +204,18 @@ public class ViewShoeActivity extends ActionBarActivity {
     public void onDestroy() {
         unregisterReceiver(mReceiver);
         super.onDestroy();
+    }
+
+    private void loadShoeData() {
+        DataSrc dataSrc = new DataSrc(this);
+        try {
+            dataSrc.open();
+            mShoe = dataSrc.getShoe(mShoe.getId());
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        } finally {
+            if (dataSrc.isOpen()) dataSrc.close();
+        }
     }
 
     private void refreshViews() {
