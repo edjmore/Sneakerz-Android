@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Pair;
 
 import java.io.File;
+import java.text.DecimalFormat;
 
 /**
  * Created by Ed on 5/27/15.
@@ -27,6 +28,16 @@ public class Shoe {
 
     public Uri getImageUri() {
         return imgUri;
+    }
+
+    public String getDist(String units) {
+        DecimalFormat df = new DecimalFormat("0.0");
+        if (units.equals("miles")) {
+            return df.format(miles);
+        } else {
+            double km = miles * 1.609344; // kilometers per mile
+            return df.format(km);
+        }
     }
 
     public static Shoe cursorToShoe(Cursor cursor, int[] indices) {

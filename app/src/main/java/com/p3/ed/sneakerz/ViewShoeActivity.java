@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -13,13 +14,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -145,6 +149,7 @@ public class ViewShoeActivity extends ActionBarActivity {
         }
     };
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,6 +191,16 @@ public class ViewShoeActivity extends ActionBarActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                // TODO: Switch to edit mode
+                return true;
+        }
+        return false;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (data == null) {
@@ -219,15 +234,18 @@ public class ViewShoeActivity extends ActionBarActivity {
     }
 
     private void refreshViews() {
-        // Image
+
         ImageView imageView = (ImageView) findViewById(R.id.view_shoe_image);
         imageView.setImageURI(mShoe.getImageUri());
-        // Name
+
         TextView nameView = (TextView) findViewById(R.id.view_shoe_name);
         nameView.setText(mShoe.name);
-        // Distance
+
         TextView distView = (TextView) findViewById(R.id.view_shoe_dist);
-        DecimalFormat df = new DecimalFormat("0.0");
-        distView.setText(df.format(mShoe.miles));
+        TextView descView = (TextView) findViewById(R.id.view_shoe_dist_desc);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String units = prefs.getString("key_pref_dist", "miles");
+        distView.setText(mShoe.getDist(units));
+        descView.setText(units);
     }
 }

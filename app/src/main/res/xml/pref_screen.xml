@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:entries="@array/pref_dist_entries"
+        android:entryValues="@array/pref_dist_entries"
+        android:key="key_pref_dist"
+        android:summary="@string/pref_dist_summary"
+        android:title="@string/pref_dist_title" />
+</PreferenceScreen>

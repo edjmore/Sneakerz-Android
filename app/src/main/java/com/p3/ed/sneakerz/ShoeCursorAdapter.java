@@ -1,7 +1,9 @@
 package com.p3.ed.sneakerz;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +21,16 @@ public class ShoeCursorAdapter extends CursorAdapter {
 
     private LayoutInflater mInflater;
     private int[] mIndices;
+    private String mUnits;
 
     public ShoeCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mIndices = DbHelper.getColIndices(cursor, DbHelper.TABLE_SHOES);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mUnits = prefs.getString("key_pref_dist", "miles");
     }
 
     @Override
@@ -41,8 +47,9 @@ public class ShoeCursorAdapter extends CursorAdapter {
         nameView.setText(shoe.name);
 
         TextView milesView = (TextView) view.findViewById(R.id.shoe_item_dist);
-        DecimalFormat df = new DecimalFormat("0.0");
-        milesView.setText(df.format(shoe.miles));
+        milesView.setText(shoe.getDist(mUnits));
+        TextView descView = (TextView) view.findViewById(R.id.shoe_item_dist_desc);
+        descView.setText(mUnits);
 
         ImageView imgView = (ImageView) view.findViewById(R.id.shoe_item_image);
         imgView.setImageURI(shoe.getImageUri());
