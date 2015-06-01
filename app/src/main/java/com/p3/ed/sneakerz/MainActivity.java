@@ -20,6 +20,7 @@ import java.sql.SQLException;
 public class MainActivity extends ActionBarActivity {
     public static final String TAG = "MainActivity";
 
+    private DataSrc mDataSrc;
     private Cursor mShoeCursor;
 
     private final View.OnClickListener mNewShoeButtonListener = new View.OnClickListener() {
@@ -28,16 +29,14 @@ public class MainActivity extends ActionBarActivity {
             EditText editText = (EditText) findViewById(R.id.main_shoe_name_input);
             String input = editText.getText().toString();
             if (!input.isEmpty()) {
-                DataSrc dataSrc = new DataSrc(getApplicationContext());
+                if (mDataSrc == null) mDataSrc = new DataSrc(getApplicationContext());
                 try {
-                    dataSrc.open();
-                    dataSrc.addShoe(input);
+                    if (!mDataSrc.isOpen()) mDataSrc.open();
+                    mDataSrc.addShoe(input);
 
-                    mShoeCursor = dataSrc.getAllShoes();
+                    mShoeCursor = mDataSrc.getAllShoes();
                 } catch (SQLException sqle) {
                     sqle.printStackTrace();
-                } finally {
-                    if (dataSrc.isOpen()) dataSrc.close();
                 }
             }
 
@@ -88,18 +87,17 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onDestroy() {
+        if (mDataSrc != null && mDataSrc.isOpen()) mDataSrc.close();
         super.onDestroy();
     }
 
     private void loadShoeCursor() {
-        DataSrc dataSrc = new DataSrc(this);
+        if (mDataSrc == null) mDataSrc = new DataSrc(this);
         try {
-            dataSrc.open();
-            mShoeCursor = dataSrc.getAllShoes();
+            if (!mDataSrc.isOpen()) mDataSrc.open();
+            mShoeCursor = mDataSrc.getAllShoes();
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-        } finally {
-            if (dataSrc.isOpen()) dataSrc.close();
         }
     }
 
