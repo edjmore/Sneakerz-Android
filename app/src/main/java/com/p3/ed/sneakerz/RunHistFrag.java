@@ -12,6 +12,7 @@ import android.widget.Button;
  * Created by Ed on 5/29/15.
  */
 public class RunHistFrag extends Fragment {
+    private static final String TAG = "RunHistFrag";
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
