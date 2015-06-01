@@ -32,14 +32,8 @@ public class NewRunFrag extends Fragment {
 
         // Initialize all number pickers
         tens = (NumberPicker) getView().findViewById(R.id.new_run_tens);
-        tens.setMaxValue(9);
-        tens.setMinValue(0);
         ones = (NumberPicker) getView().findViewById(R.id.new_run_ones);
-        ones.setMaxValue(9);
-        ones.setMinValue(0);
         tenths = (NumberPicker) getView().findViewById(R.id.new_run_tenths);
-        tenths.setMaxValue(9);
-        tenths.setMinValue(0);
 
         // Set button click behavior
         Button fin = (Button) getView().findViewById(R.id.new_run_finish);

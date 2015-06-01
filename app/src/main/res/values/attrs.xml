@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="MyNumPicker">
+        <attr name="maxNum" format="integer" />
+        <attr name="minNum" format="integer" />
+    </declare-styleable>
+
+</resources>
