@@ -13,7 +13,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Database
     private static final String DB_SNEAKERZ = "sneakerz.db";
-    private static final int DB_VERSION = 14;
+    private static final int DB_VERSION = 15;
 
     // Tables
     public static final String TABLE_SHOES = "shoes";
@@ -23,8 +23,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String SHOES_ID = "_id";
     public static final String SHOES_NAME = "name";
     public static final String SHOES_MILES = "miles";
-    public static final String SHOES_SMALL_IMG_FILE_PATH = "small_img_file_path";
-    public static final String SHOES_LARGE_IMG_FILE_PATH = "large_img_file_path";
+    public static final String SHOES_IMAGE_URI = "small_img_file_path";
     // 'Runs' columns
     public static final String RUNS_ID = "_id";
     public static final String RUNS_SHOE_ID = "shoe_id";
@@ -33,8 +32,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String DB_CREATE_SHOES = "create table " + TABLE_SHOES + "(" + SHOES_ID +
             " integer primary key autoincrement, " + SHOES_NAME + " text not null, " +
-            SHOES_MILES + " double, " + SHOES_SMALL_IMG_FILE_PATH + " text, " +
-            SHOES_LARGE_IMG_FILE_PATH + " text);";
+            SHOES_MILES + " double, " + SHOES_IMAGE_URI + " text);";
 
     /* TODO:
     private static final String DB_CREATE_RUNS = "create table " + TABLE_RUNS + "(" + RUNS_ID +
@@ -66,14 +64,12 @@ public class DbHelper extends SQLiteOpenHelper {
             int _idCol = cursor.getColumnIndex(SHOES_ID);
             int nameCol = cursor.getColumnIndex(SHOES_NAME);
             int milesCol = cursor.getColumnIndex(SHOES_MILES);
-            int smallImgFilePathCol = cursor.getColumnIndex(SHOES_SMALL_IMG_FILE_PATH);
-            int largeImgFilePathCol = cursor.getColumnIndex(SHOES_LARGE_IMG_FILE_PATH);
+            int imgUri = cursor.getColumnIndex(SHOES_IMAGE_URI);
 
-            // Return an array of indices
             return new int[]{
-                    _idCol, nameCol, milesCol, smallImgFilePathCol, largeImgFilePathCol
+                    _idCol, nameCol, milesCol, imgUri
             };
-        } else if (table.equals(TABLE_RUNS)) {
+        } else { // assume client wants 'Runs' table
             int _idCol = cursor.getColumnIndex(RUNS_ID);
             int shoeIdCol = cursor.getColumnIndex(RUNS_SHOE_ID);
             int milesCol = cursor.getColumnIndex(RUNS_MILES);
@@ -83,8 +79,5 @@ public class DbHelper extends SQLiteOpenHelper {
                     _idCol, shoeIdCol, milesCol, dateCol
             };
         }
-
-        // Table not found
-        return null;
     }
 }

@@ -3,13 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="16dp">
 
-    <FrameLayout
-        android:id="@+id/edit_shoe_img_frame"
+    <ImageView
+        android:id="@+id/view_shoe_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3" />
+        android:layout_weight="3"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/def_sneakers" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +20,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/edit_shoe_name"
+            android:id="@+id/view_shoe_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
@@ -34,14 +36,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/edit_shoe_dist"
+                android:id="@+id/view_shoe_dist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="69"
                 android:textSize="32sp" />
 
             <TextView
-                android:id="@+id/edit_shoe_dist_desc"
+                android:id="@+id/view_shoe_dist_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/miles" />
@@ -49,17 +51,9 @@
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/edit_shoe_frame"
+        android:id="@+id/view_shoe_frag_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"></FrameLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:onClick="deleteShoe"
-        android:text="Delete"
-        android:textAllCaps="false" />
 
 </LinearLayout>

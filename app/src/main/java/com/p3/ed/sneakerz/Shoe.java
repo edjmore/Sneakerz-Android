@@ -10,41 +10,36 @@ import java.io.File;
  * Created by Ed on 5/27/15.
  */
 public class Shoe {
+    private static final String TAG = "Shoe";
+    
+    public String name; // not null
+    public double miles;
 
-    // Auto assigned by SQLite database
-    private int _id;
-
-    String name; // not null
-    double miles;
-
-    private Uri smallImgUri; // possibly null
-    private Uri largeImgUri; // possibly null
+    private int _id; // auto-assigned
+    private Uri imgUri; // possibly null
 
     public Shoe() {
     }
 
-    public int get_id() {
+    public int getId() {
         return this._id;
     }
 
-    public Pair<Uri, Uri> getImageUris() {
-        return new Pair(smallImgUri, largeImgUri);
+    public Uri getImageUri() {
+        return imgUri;
     }
 
     public static Shoe cursorToShoe(Cursor cursor, int[] indices) {
         Shoe shoe = new Shoe();
+
         shoe._id = cursor.getInt(indices[0]);
         shoe.name = cursor.getString(indices[1]);
         shoe.miles = cursor.getDouble(indices[2]);
-        // Create files from paths and then build URI's (if paths are not null)
+
         String path;
         if ((path = cursor.getString(indices[3])) != null) {
-            File smallImgFile = new File(path);
-            shoe.smallImgUri = Uri.fromFile(smallImgFile);
-        }
-        if ((path = cursor.getString(indices[4])) != null) {
-            File largeImgFile = new File(path);
-            shoe.largeImgUri = Uri.fromFile(largeImgFile);
+            File imgFile = new File(path);
+            shoe.imgUri = Uri.fromFile(imgFile);
         }
 
         return shoe;
@@ -52,7 +47,7 @@ public class Shoe {
 
     @Override
     public String toString() {
-        return "Name: " + this.name + '\n' + "Miles: " + this.miles + '\n' + "LrgURI: " +
-                this.largeImgUri + " SmlURI: " + this.smallImgUri + '\n' + "ID: " + this._id;
+        return "Name: " + this.name + '\n' + "Miles: " + this.miles + '\n' + "Image URI: " +
+                this.imgUri + '\n' + "ID: " + this._id;
     }
 }

@@ -13,26 +13,16 @@ import android.widget.Button;
  */
 public class RunHistFrag extends Fragment {
 
-    // TODO: Load run history for this shoe
-    private int mShoe_id;
-
-    @Override
-    public void setArguments(Bundle args) {
-        mShoe_id = args.getInt(EditShoeActivity.SHOE_ID);
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Set button click behavior
-        Button addRun = (Button) getView().findViewById(R.id.run_hist_add_run);
-        addRun.setOnClickListener(new View.OnClickListener() {
+        Button addRunButton = (Button) getView().findViewById(R.id.run_hist_add_run);
+        addRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Want to replace this fragment with the new run fragment
                 Intent addRun = new Intent();
-                addRun.setAction(EditShoeActivity.ADD_RUN);
+                addRun.setAction(ViewShoeActivity.ACTION_ADD_RUN);
                 getActivity().sendBroadcast(addRun);
             }
         });

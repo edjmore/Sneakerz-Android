@@ -22,10 +22,9 @@
         </activity>
 
         <activity
-            android:name=".EditShoeActivity"
+            android:name=".ViewShoeActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

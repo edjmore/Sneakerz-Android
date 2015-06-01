@@ -12,14 +12,15 @@ import java.sql.SQLException;
  * Created by Ed on 5/27/15.
  */
 public class DataSrc {
-    public static final String TAG = "DataSrc";
+    private static final String TAG = "DataSrc";
 
     private DbHelper mDbhelper;
     private SQLiteDatabase mDb;
+    private boolean mOpen;
 
     public static final String[] ALL_SHOE_COLUMNS = {
             DbHelper.SHOES_ID, DbHelper.SHOES_NAME, DbHelper.SHOES_MILES,
-            DbHelper.SHOES_SMALL_IMG_FILE_PATH, DbHelper.SHOES_LARGE_IMG_FILE_PATH
+            DbHelper.SHOES_IMAGE_URI
     };
 
     public DataSrc(Context context) {
@@ -30,8 +31,6 @@ public class DataSrc {
         mDb = mDbhelper.getWritableDatabase();
         mOpen = true;
     }
-
-    private boolean mOpen;
 
     public boolean isOpen() {
         return mOpen;
@@ -64,10 +63,9 @@ public class DataSrc {
         return Shoe.cursorToShoe(cursor, indices);
     }
 
-    public void setImageUris(Uri smallImg, Uri largeImg, int _id) {
+    public void setImageUri(Uri imgUri, int _id) {
         ContentValues values = new ContentValues();
-        values.put(DbHelper.SHOES_SMALL_IMG_FILE_PATH, smallImg.getPath());
-        values.put(DbHelper.SHOES_LARGE_IMG_FILE_PATH, largeImg.getPath());
+        values.put(DbHelper.SHOES_IMAGE_URI, imgUri.getPath());
 
         // Update the row with the provided ID
         String whereClause = DbHelper.SHOES_ID + " = ?";

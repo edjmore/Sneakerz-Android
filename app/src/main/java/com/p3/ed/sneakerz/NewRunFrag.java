@@ -1,10 +1,8 @@
 package com.p3.ed.sneakerz;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +21,7 @@ public class NewRunFrag extends Fragment {
 
     @Override
     public void setArguments(Bundle args) {
-        mShoe_id = args.getInt(EditShoeActivity.SHOE_ID);
+        // mShoe_id = args.getInt(EditShoeActivity.SHOE_ID);
     }
 
     private NumberPicker tens, ones, tenths;
@@ -56,7 +54,7 @@ public class NewRunFrag extends Fragment {
 
                 // Replace this fragment with run history fragment
                 Intent viewHist = new Intent();
-                viewHist.setAction(EditShoeActivity.VIEW_HIST);
+                // viewHist.setAction(EditShoeActivity.VIEW_HIST);
                 getActivity().sendBroadcast(viewHist);
             }
         });
@@ -75,7 +73,7 @@ public class NewRunFrag extends Fragment {
                 Shoe shoe = dataSrc.getShoe(mShoe_id);
                 double newMiles = shoe.miles + mRunMiles;
                 // Write updated distance
-                dataSrc.updateShoe(shoe.name, newMiles, shoe.get_id());
+                dataSrc.updateShoe(shoe.name, newMiles, shoe.getId());
 
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
