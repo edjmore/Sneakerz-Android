@@ -3,12 +3,15 @@ package com.p3.ed.sneakerz;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import java.sql.SQLException;
 
@@ -21,27 +24,40 @@ public class NewRunFrag extends Fragment {
     private Context mContext;
     private int mShoeId;
     private NumberPicker mTensPicker, mOnesPicker, mTenthsPicker;
-    private double mRunMiles = 0;
+    private double mRunDist = 0;
+    private String mUnits;
 
     private final Runnable writeBack = new Runnable() {
         @Override
         public void run() {
-            DataSrc dataSrc = new DataSrc(mContext);
-            try {
-                dataSrc.open();
-                Shoe shoe = dataSrc.getShoe(mShoeId);
+            // Don't care about zero distance runs
+            if (mRunDist != 0) {
+                DataSrc dataSrc = new DataSrc(mContext);
+                try {
+                    dataSrc.open();
 
-                double newMiles = shoe.miles + mRunMiles;
-                dataSrc.updateShoe(shoe.name, newMiles, shoe.getId());
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-            } finally {
-                if (dataSrc.isOpen()) dataSrc.close();
+                    double miles = mRunDist;
+                    // If in kilometers mode, convert user input to miles
+                    if (mUnits.equals("kilometers")) {
+                        miles = mRunDist / 1.609344; // kilometers per mile
+                    }
+                    // Add a new run to the database
+                    dataSrc.addRun(mShoeId, miles);
+
+                    Shoe shoe = dataSrc.getShoe(mShoeId);
+                    // Update data for this shoe
+                    double newMiles = shoe.miles + miles;
+                    dataSrc.updateShoe(shoe.name, newMiles, shoe.getId());
+                } catch (SQLException sqle) {
+                    sqle.printStackTrace();
+                } finally {
+                    if (dataSrc.isOpen()) dataSrc.close();
+                }
+
+                Intent dbUpdated = new Intent();
+                dbUpdated.setAction(ViewShoeActivity.ACTION_DB_UPDATED);
+                mContext.sendBroadcast(dbUpdated);
             }
-
-            Intent dbUpdated = new Intent();
-            dbUpdated.setAction(ViewShoeActivity.ACTION_DB_UPDATED);
-            mContext.sendBroadcast(dbUpdated);
         }
     };
 
@@ -69,7 +85,7 @@ public class NewRunFrag extends Fragment {
         finButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRunMiles = 10.0 * mTensPicker.getValue() + mOnesPicker.getValue() + mTenthsPicker.getValue() / 10.0;
+                mRunDist = 10.0 * mTensPicker.getValue() + mOnesPicker.getValue() + mTenthsPicker.getValue() / 10.0;
 
                 Thread t = new Thread(writeBack);
                 t.start();
@@ -79,5 +95,10 @@ public class NewRunFrag extends Fragment {
                 mContext.sendBroadcast(viewHist);
             }
         });
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mUnits = prefs.getString("key_pref_dist", "miles");
+        TextView distDescView = (TextView) getView().findViewById(R.id.new_run_dist_desc);
+        distDescView.setText(mUnits);
     }
 }

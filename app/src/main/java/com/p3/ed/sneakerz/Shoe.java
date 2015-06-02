@@ -19,9 +19,6 @@ public class Shoe {
     private int _id; // auto-assigned
     private Uri imgUri; // possibly null
 
-    public Shoe() {
-    }
-
     public int getId() {
         return this._id;
     }

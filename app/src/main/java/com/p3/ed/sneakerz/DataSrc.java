@@ -1,5 +1,6 @@
 package com.p3.ed.sneakerz;
 
+import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import java.sql.SQLException;
+import java.util.Date;
 
 /**
  * Created by Ed on 5/27/15.
@@ -21,6 +23,11 @@ public class DataSrc {
     public static final String[] ALL_SHOE_COLUMNS = {
             DbHelper.SHOES_ID, DbHelper.SHOES_NAME, DbHelper.SHOES_MILES,
             DbHelper.SHOES_IMAGE_URI
+    };
+
+    public static final String[] ALL_RUN_COLUMNS = {
+            DbHelper.RUNS_ID, DbHelper.RUNS_SHOE_ID, DbHelper.RUNS_MILES,
+            DbHelper.RUNS_DATE
     };
 
     public DataSrc(Context context) {
@@ -78,7 +85,7 @@ public class DataSrc {
     }
 
     public void updateShoe(String newName, double newMiles, int _id) {
-        // Only update name and miles (use 'setImageUris' to update images)
+        // Only update name and miles (use 'setImageUri' to update image)
         ContentValues values = new ContentValues();
         values.put(DbHelper.SHOES_NAME, newName);
         values.put(DbHelper.SHOES_MILES, newMiles);
@@ -105,5 +112,38 @@ public class DataSrc {
 
         // Something went wrong
         return null;
+    }
+
+    public Run addRun(int shoeId, double miles) {
+        ContentValues values = new ContentValues();
+        values.put(DbHelper.RUNS_SHOE_ID, shoeId);
+        values.put(DbHelper.RUNS_MILES, miles);
+        long date = System.currentTimeMillis();
+        values.put(DbHelper.RUNS_DATE, date);
+
+        long _id = mDb.insert(DbHelper.TABLE_RUNS, null, values);
+        // Retrieve the inserted run from table
+        String selectClause = DbHelper.RUNS_ID + " = ?";
+        Cursor cursor = mDb.query(DbHelper.TABLE_RUNS, ALL_RUN_COLUMNS, selectClause,
+                new String[]{String.valueOf(_id)}, null, null, null);
+        cursor.moveToNext();
+
+        int[] indices = DbHelper.getColIndices(cursor, DbHelper.TABLE_RUNS);
+
+        return Run.cursorToRun(cursor, indices);
+    }
+
+    public void deleteRun(int _id) {
+        String whereClause = DbHelper.RUNS_ID + " = ?";
+        mDb.delete(DbHelper.TABLE_RUNS, whereClause, new String[]{String.valueOf(_id)});
+    }
+
+    public Cursor getAllRunsForShoe(int shoeId) {
+        String selectClause = DbHelper.RUNS_SHOE_ID + " = ?";
+        // Sort by date
+        String orderBy = DbHelper.RUNS_DATE;
+
+        return mDb.query(DbHelper.TABLE_RUNS, ALL_RUN_COLUMNS, selectClause,
+                new String[]{String.valueOf(shoeId)}, null, null, orderBy);
     }
 }

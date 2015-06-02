@@ -13,7 +13,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Database
     private static final String DB_SNEAKERZ = "sneakerz.db";
-    private static final int DB_VERSION = 15;
+    private static final int DB_VERSION = 17;
 
     // Tables
     public static final String TABLE_SHOES = "shoes";
@@ -34,11 +34,9 @@ public class DbHelper extends SQLiteOpenHelper {
             " integer primary key autoincrement, " + SHOES_NAME + " text not null, " +
             SHOES_MILES + " double, " + SHOES_IMAGE_URI + " text);";
 
-    /* TODO:
     private static final String DB_CREATE_RUNS = "create table " + TABLE_RUNS + "(" + RUNS_ID +
-            " integer primary key auto increment, " + RUNS_SHOE_ID + " integer, " + RUNS_MILES +
+            " integer primary key autoincrement, " + RUNS_SHOE_ID + " integer, " + RUNS_MILES +
             " double, " + RUNS_DATE + " text not null);";
-     */
 
     public DbHelper(Context context) {
         super(context, DB_SNEAKERZ, null, DB_VERSION);
@@ -47,15 +45,14 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DB_CREATE_SHOES);
-        // TODO:
-        // db.execSQL(DB_CREATE_RUNS);
+        db.execSQL(DB_CREATE_RUNS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOES);
-        // TODO:
-        // db.execSQL("DROP TABLE IF EXISTS " + TABLE_RUNS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RUNS);
+
         onCreate(db);
     }
 
@@ -69,6 +66,7 @@ public class DbHelper extends SQLiteOpenHelper {
             return new int[]{
                     _idCol, nameCol, milesCol, imgUri
             };
+
         } else { // assume client wants 'Runs' table
             int _idCol = cursor.getColumnIndex(RUNS_ID);
             int shoeIdCol = cursor.getColumnIndex(RUNS_SHOE_ID);

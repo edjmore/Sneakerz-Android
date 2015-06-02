@@ -40,6 +40,7 @@ public class ViewShoeActivity extends ActionBarActivity {
     public static final String KEY_SHOE_ID = "shoe_id";
     private Shoe mShoe;
     private Uri mTempUri;
+    private Bundle mArgs;
 
     public static final String ACTION_ADD_RUN = "com.p3.ed.action.ADD_RUN",
             ACTION_VIEW_HIST = "com.p3.ed.action.VIEW_HIST";
@@ -49,20 +50,18 @@ public class ViewShoeActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             FragmentManager fm = getFragmentManager();
-            Bundle args = new Bundle();
-            args.putInt(KEY_SHOE_ID, mShoe.getId());
 
             switch (intent.getAction()) {
                 case ACTION_ADD_RUN:
                     NewRunFrag newRunFrag = new NewRunFrag();
-                    newRunFrag.setArguments(args);
+                    newRunFrag.setArguments(mArgs);
                     fm.beginTransaction().replace(R.id.view_shoe_frag_container, newRunFrag)
                             .commit();
                     break;
 
                 case ACTION_VIEW_HIST:
                     RunHistFrag runHistFrag = new RunHistFrag();
-                    runHistFrag.setArguments(args);
+                    runHistFrag.setArguments(mArgs);
                     fm.beginTransaction().replace(R.id.view_shoe_frag_container, runHistFrag)
                             .commit();
                     break;
@@ -174,6 +173,9 @@ public class ViewShoeActivity extends ActionBarActivity {
 
         FragmentManager fm = getFragmentManager();
         RunHistFrag runHistFrag = new RunHistFrag();
+        mArgs = new Bundle();
+        mArgs.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoe.getId());
+        runHistFrag.setArguments(mArgs);
         fm.beginTransaction().add(R.id.view_shoe_frag_container, runHistFrag).commit();
 
         IntentFilter filter = new IntentFilter();
@@ -234,7 +236,6 @@ public class ViewShoeActivity extends ActionBarActivity {
     }
 
     private void refreshViews() {
-
         ImageView imageView = (ImageView) findViewById(R.id.view_shoe_image);
         imageView.setImageURI(mShoe.getImageUri());
 
