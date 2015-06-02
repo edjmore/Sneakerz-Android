@@ -13,7 +13,6 @@
 
         <activity
             android:name=".MainActivity"
-            android:icon="@mipmap/def_sneakers"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +22,6 @@
 
         <activity
             android:name=".ViewShoeActivity"
-            android:icon="@mipmap/def_sneakers"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
@@ -33,7 +31,6 @@
 
         <activity
             android:name=".PrefActivity"
-            android:icon="@mipmap/def_sneakers"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data

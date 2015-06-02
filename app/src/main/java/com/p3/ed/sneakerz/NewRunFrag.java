@@ -26,7 +26,7 @@ public class NewRunFrag extends Fragment {
     private final Runnable writeBack = new Runnable() {
         @Override
         public void run() {
-            DataSrc dataSrc = new DataSrc(getActivity());
+            DataSrc dataSrc = new DataSrc(mContext);
             try {
                 dataSrc.open();
                 Shoe shoe = dataSrc.getShoe(mShoeId);
