@@ -6,4 +6,9 @@
         <attr name="minNum" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="IconButton">
+        <attr name="customIcon" format="integer" />
+        <attr name="customIconSize" format="integer" />
+    </declare-styleable>
+
 </resources>
