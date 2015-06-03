@@ -9,13 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ImageButton
+    <Button
         android:id="@+id/run_hist_add_run"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="bottom|right"
         android:layout_margin="8dp"
         android:background="@drawable/circle"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_action_new" />
+        android:elevation="2dp"
+        android:shadowRadius="8" />
 </FrameLayout>

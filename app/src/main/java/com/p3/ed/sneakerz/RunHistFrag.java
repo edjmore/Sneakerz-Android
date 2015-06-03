@@ -56,7 +56,7 @@ public class RunHistFrag extends Fragment {
             if (dataSrc.isOpen()) dataSrc.close();
         }
 
-        ImageButton addRunButton = (ImageButton) getView().findViewById(R.id.run_hist_add_run);
+        Button addRunButton = (Button) getView().findViewById(R.id.run_hist_add_run);
         addRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

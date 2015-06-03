@@ -7,9 +7,9 @@
     </style>
 
     <style name="ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/action_bar</item>
+        <item name="android:background">@color/main_theme_blue</item>
         <!-- For support library. -->
-        <item name="background">@color/action_bar</item>
+        <item name="background">@color/main_theme_blue</item>
     </style>
 
 </resources>
