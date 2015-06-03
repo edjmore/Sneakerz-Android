@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -189,7 +190,17 @@ public class ViewShoeActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.view_shoe_menu, menu);
+
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Set title to name of this shoe
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(mShoe.name);
     }
 
     @Override
