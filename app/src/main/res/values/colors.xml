@@ -2,4 +2,5 @@
 <resources>
     <color name="main_theme_blue">#ff005d81</color>
     <color name="trans">#00000000</color>
+    <color name="white">#eeffffff</color>
 </resources>

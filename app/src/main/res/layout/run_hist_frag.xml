@@ -16,7 +16,7 @@
         android:layout_height="64dp"
         android:layout_gravity="bottom|right"
         android:layout_margin="8dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/blue_circle"
         android:shadowRadius="16"
         custom:customIcon="@drawable/ic_action_new"
         custom:customIconSize="96" />

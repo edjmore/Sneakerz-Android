@@ -250,9 +250,6 @@ public class ViewShoeActivity extends ActionBarActivity {
         ImageView imageView = (ImageView) findViewById(R.id.view_shoe_image);
         imageView.setImageURI(mShoe.getImageUri());
 
-        TextView nameView = (TextView) findViewById(R.id.view_shoe_name);
-        nameView.setText(mShoe.name);
-
         TextView distView = (TextView) findViewById(R.id.view_shoe_dist);
         TextView descView = (TextView) findViewById(R.id.view_shoe_dist_desc);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
