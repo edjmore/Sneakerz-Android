@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.sql.SQLException;
@@ -55,7 +56,7 @@ public class RunHistFrag extends Fragment {
             if (dataSrc.isOpen()) dataSrc.close();
         }
 
-        Button addRunButton = (Button) getView().findViewById(R.id.run_hist_add_run);
+        ImageButton addRunButton = (ImageButton) getView().findViewById(R.id.run_hist_add_run);
         addRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

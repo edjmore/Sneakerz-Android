@@ -3,20 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/view_shoe_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:scaleType="centerCrop"
         android:src="@mipmap/def_sneakers" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <TextView
@@ -26,7 +26,7 @@
             android:layout_weight="3"
             android:gravity="center_vertical"
             android:text="@string/hello_world"
-            android:textSize="32sp" />
+            android:textSize="24sp" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -40,13 +40,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="69"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/view_shoe_dist_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/miles" />
+                android:text="@string/miles"
+                android:textStyle="italic" />
         </LinearLayout>
     </LinearLayout>
 
@@ -54,6 +55,5 @@
         android:id="@+id/view_shoe_frag_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"></FrameLayout>
-
+        android:layout_weight="5" />
 </LinearLayout>

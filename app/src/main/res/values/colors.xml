@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="action_bar">#cafebabe</color>
+    <color name="action_bar">#ff005d81</color>
+    <color name="trans">#00000000</color>
 </resources>

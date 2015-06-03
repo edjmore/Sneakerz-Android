@@ -40,6 +40,7 @@
             android:textSize="32sp" />
 
         <TextView
+            android:textStyle="italic"
             android:id="@+id/shoe_item_dist_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

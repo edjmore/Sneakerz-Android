@@ -15,6 +15,7 @@
         android:textSize="32sp" />
 
     <TextView
+        android:textStyle="italic"
         android:id="@+id/run_item_dist_desc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
