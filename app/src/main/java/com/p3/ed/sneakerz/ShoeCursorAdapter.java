@@ -1,8 +1,13 @@
 package com.p3.ed.sneakerz;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +16,11 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * Created by Ed on 5/27/15.
@@ -22,9 +31,14 @@ public class ShoeCursorAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
     private int[] mIndices;
     private String mUnits;
+    private Uri mDefUri;
 
     public ShoeCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
+        mDefUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                context.getResources().getResourcePackageName(R.mipmap.def_sneakers) + '/' +
+                context.getResources().getResourceTypeName(R.mipmap.def_sneakers) + '/' +
+                context.getResources().getResourceEntryName(R.mipmap.def_sneakers));
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mIndices = DbHelper.getColIndices(cursor, DbHelper.TABLE_SHOES);
@@ -51,7 +65,8 @@ public class ShoeCursorAdapter extends CursorAdapter {
         TextView descView = (TextView) view.findViewById(R.id.shoe_item_dist_desc);
         descView.setText(mUnits);
 
-        ImageView imgView = (ImageView) view.findViewById(R.id.shoe_item_image);
-        imgView.setImageURI(shoe.getImageUri());
+        ImageView imageView = (ImageView) view.findViewById(R.id.shoe_item_image);
+        Uri uri = shoe.getImageUri() == null ? mDefUri : shoe.getImageUri();
+        imageView.setImageURI(uri);
     }
 }
