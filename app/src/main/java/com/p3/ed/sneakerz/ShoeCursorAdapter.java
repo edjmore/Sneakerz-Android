@@ -33,6 +33,8 @@ public class ShoeCursorAdapter extends CursorAdapter {
     private String mUnits;
     private Uri mDefUri;
 
+    private BitmapManager bmpManager;
+
     public ShoeCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
         mDefUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
@@ -45,6 +47,8 @@ public class ShoeCursorAdapter extends CursorAdapter {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         mUnits = prefs.getString("key_pref_dist", "miles");
+
+        bmpManager = new BitmapManager(context);
     }
 
     @Override
@@ -65,8 +69,12 @@ public class ShoeCursorAdapter extends CursorAdapter {
         TextView descView = (TextView) view.findViewById(R.id.shoe_item_dist_desc);
         descView.setText(mUnits);
 
-        ImageView imageView = (ImageView) view.findViewById(R.id.shoe_item_image);
-        Uri uri = shoe.getImageUri() == null ? mDefUri : shoe.getImageUri();
-        imageView.setImageURI(uri);
+        final ImageView imageView = (ImageView) view.findViewById(R.id.shoe_item_image);
+        // URI guaranteed to be valid
+        final Uri uri = shoe.getImageUri() == null ? mDefUri : shoe.getImageUri();
+        // Temporarily set no image so we only load one
+        imageView.setImageURI(Uri.EMPTY);
+        // Fetch and set image on background thread
+        bmpManager.fetchBitmapAsync(uri, imageView);
     }
 }

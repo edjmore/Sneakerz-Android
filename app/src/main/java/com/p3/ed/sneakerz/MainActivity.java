@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 
 import java.sql.SQLException;
 
@@ -31,6 +32,9 @@ public class MainActivity extends ActionBarActivity {
     private final View.OnClickListener mNewShoeButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            // TODO: Add new shoe with popup window
+            PopupWindow popupWindow = new PopupWindow(mContext);
+
             EditText editText = (EditText) findViewById(R.id.main_shoe_name_input);
             String input = editText.getText().toString();
             if (!input.isEmpty()) {
