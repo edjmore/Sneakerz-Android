@@ -1,10 +1,10 @@
 package com.p3.ed.sneakerz;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,8 +23,10 @@ import java.sql.SQLException;
 public class MainActivity extends ActionBarActivity {
     public static final String TAG = "MainActivity";
 
-    private DataSrc mDataSrc;
-    private Cursor mShoeCursor;
+
+    private Context mContext;
+    private ShoeCursorAdapter mAdapter;
+    private ListView mListView;
 
     private final View.OnClickListener mNewShoeButtonListener = new View.OnClickListener() {
         @Override
@@ -32,18 +34,21 @@ public class MainActivity extends ActionBarActivity {
             EditText editText = (EditText) findViewById(R.id.main_shoe_name_input);
             String input = editText.getText().toString();
             if (!input.isEmpty()) {
-                if (mDataSrc == null) mDataSrc = new DataSrc(getApplicationContext());
+                DataSrc dataSrc = new DataSrc(mContext);
                 try {
-                    if (!mDataSrc.isOpen()) mDataSrc.open();
-                    mDataSrc.addShoe(input);
-
-                    mShoeCursor = mDataSrc.getAllShoes();
+                    dataSrc.open();
+                    // Add new shoe
+                    dataSrc.addShoe(input);
+                    // Refresh views while data source is open
+                    Cursor cursor = dataSrc.getAllShoes();
+                    // Adapter will not be null
+                    mAdapter.swapCursor(cursor);
                 } catch (SQLException sqle) {
                     sqle.printStackTrace();
+                } finally {
+                    if (dataSrc.isOpen()) dataSrc.close();
                 }
             }
-
-            refreshViews();
         }
     };
 
@@ -62,15 +67,16 @@ public class MainActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        mContext = this;
 
+        // Handle list view first
+        mListView = (ListView) findViewById(R.id.main_shoe_list);
+        refresh();
+        mListView.setOnItemClickListener(mLvClkListener);
+
+        // Button for adding new shoes to list
         Button newShoeButton = (Button) findViewById(R.id.main_add_shoe_button);
         newShoeButton.setOnClickListener(mNewShoeButtonListener);
-
-        ListView shoeList = (ListView) findViewById(R.id.main_shoe_list);
-        shoeList.setOnItemClickListener(mLvClkListener);
-
-        loadShoeCursor();
-        refreshViews();
     }
 
     @Override
@@ -86,54 +92,35 @@ public class MainActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent prefs = new Intent(this, PrefActivity.class);
-                startActivityForResult(prefs, 0);
+                startActivity(prefs);
                 return true;
         }
         return false;
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            loadShoeCursor();
-            refreshViews();
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
-        loadShoeCursor();
-        refreshViews();
+        refresh();
     }
 
-    @Override
-    public void onDestroy() {
-        if (mDataSrc != null && mDataSrc.isOpen()) mDataSrc.close();
-        super.onDestroy();
-    }
-
-    private void loadShoeCursor() {
-        if (mDataSrc == null) mDataSrc = new DataSrc(this);
+    private void refresh() {
+        DataSrc dataSrc = new DataSrc(mContext);
         try {
-            if (!mDataSrc.isOpen()) mDataSrc.open();
-            mShoeCursor = mDataSrc.getAllShoes();
+            dataSrc.open();
+            // Get new shoe data and display in list
+            Cursor cursor = dataSrc.getAllShoes();
+            if (mAdapter == null) {
+                // Initialize adapter if necessary
+                mAdapter = new ShoeCursorAdapter(mContext, cursor, 0);
+                mListView.setAdapter(mAdapter);
+            }
+            mAdapter.swapCursor(cursor);
         } catch (SQLException sqle) {
             sqle.printStackTrace();
+        } finally {
+            if (dataSrc.isOpen()) dataSrc.close();
         }
-    }
-
-    private void refreshViews() {
-        if (mShoeCursor != null && mShoeCursor.getCount() > 0) {
-            mShoeCursor.moveToNext();
-
-            ListView shoeList = (ListView) findViewById(R.id.main_shoe_list);
-            ShoeCursorAdapter shoeCursorAdapter = new ShoeCursorAdapter(this, mShoeCursor, 0);
-            shoeList.setAdapter(shoeCursorAdapter);
-        }
-
-        EditText editText = (EditText) findViewById(R.id.main_shoe_name_input);
-        editText.clearComposingText();
     }
 }
