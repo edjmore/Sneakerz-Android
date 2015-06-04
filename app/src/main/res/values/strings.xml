@@ -10,5 +10,6 @@
     <string name="finish">Finish</string>
     <string name="pref_dist_title">Distance Units</string>
     <string name="pref_dist_summary">Display distances in metric or imperial units?</string>
+    <string name="pref_units">key_pref_dist</string>
 
 </resources>

@@ -40,7 +40,6 @@ public class ViewShoeActivity extends ActionBarActivity {
 
     public static final String KEY_SHOE_ID = "shoe_id";
     private Shoe mShoe;
-    private Uri mTempUri;
     private Bundle mArgs;
 
     public static final String ACTION_ADD_RUN = "com.p3.ed.action.ADD_RUN",
@@ -75,81 +74,6 @@ public class ViewShoeActivity extends ActionBarActivity {
         }
     };
 
-    private Bitmap mImgBmp;
-    private final Handler mGuiHandler = new Handler();
-    private final Runnable mRefreshImgView = new Runnable() {
-        @Override
-        public void run() {
-            ImageView imgView = (ImageView) findViewById(R.id.view_shoe_image);
-            imgView.setImageBitmap(mImgBmp);
-        }
-    };
-
-    private final View.OnClickListener mIvClkListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Intent pickImage = new Intent(Intent.ACTION_PICK);
-            pickImage.setType("image/*");
-
-            File temp = null;
-            try {
-                temp = File.createTempFile(mShoe.name, ".png", Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-            Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, mTempUri = Uri.fromFile(temp));
-
-            Intent chooser = Intent.createChooser(pickImage,
-                    "Choose an image or take a picture.");
-            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{captureImage});
-            startActivityForResult(chooser, 0);
-        }
-    };
-
-    private final Runnable mHandleNewImage = new Runnable() {
-        @Override
-        public void run() {
-            File pubDir =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File temp = null;
-            try {
-                InputStream in = getContentResolver().openInputStream(mTempUri);
-                mImgBmp = BitmapFactory.decodeStream(in);
-                // Crop image if larger than screen
-                Point screenSize = new Point();
-                getWindowManager().getDefaultDisplay().getSize(screenSize);
-                if (mImgBmp.getWidth() > screenSize.x) {
-                    Float scale = (float) screenSize.x / mImgBmp.getWidth();
-                    mImgBmp = Bitmap.createScaledBitmap(mImgBmp, (int) (mImgBmp.getWidth() * scale),
-                            (int) (mImgBmp.getHeight() * scale), false);
-                }
-
-                // Post image to GUI before proceeding
-                mGuiHandler.post(mRefreshImgView);
-
-                temp = File.createTempFile(mShoe.name, ".png", pubDir);
-                FileOutputStream out = new FileOutputStream(temp);
-                mImgBmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-            Uri finalUri = Uri.fromFile(temp);
-
-            DataSrc dataSrc = new DataSrc(getApplicationContext());
-            try {
-                dataSrc.open();
-                dataSrc.setImageUri(finalUri, mShoe.getId());
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-            } finally {
-                dataSrc.close();
-            }
-        }
-    };
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,9 +92,6 @@ public class ViewShoeActivity extends ActionBarActivity {
         } finally {
             if (dataSrc.isOpen()) dataSrc.close();
         }
-
-        ImageView imageView = (ImageView) findViewById(R.id.view_shoe_image);
-        imageView.setOnClickListener(mIvClkListener);
 
         FragmentManager fm = getFragmentManager();
         RunHistFrag runHistFrag = new RunHistFrag();
@@ -205,27 +126,18 @@ public class ViewShoeActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        FragmentManager fm = getFragmentManager();
+        Bundle args = new Bundle();
+        args.putInt(KEY_SHOE_ID, mShoe.getId());
+
         switch (item.getItemId()) {
             case R.id.action_edit:
-                // TODO: Switch to edit mode
+                EditShoeFrag editShoeFrag = new EditShoeFrag();
+                editShoeFrag.setArguments(args);
+                fm.beginTransaction().replace(R.id.view_shoe_frag_container, editShoeFrag).commit();
                 return true;
         }
         return false;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            if (data == null) {
-                // User captured a new image
-            } else {
-                // User picked an existing image
-                mTempUri = data.getData();
-            }
-
-            Thread t = new Thread(mHandleNewImage);
-            t.start();
-        }
     }
 
     @Override
