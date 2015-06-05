@@ -32,6 +32,10 @@ public class BitmapManager {
             // Already have the bitmap
             dstView.setImageBitmap(mBmpMap.get(imgUri));
         }
+
+        // Temporarily set the image view to be blank so the default image from XML isn't loaded
+        dstView.setImageURI(Uri.EMPTY);
+
         final Handler guiHandler = new Handler() {
             @Override
             public void handleMessage(Message m) {
@@ -39,7 +43,8 @@ public class BitmapManager {
                 dstView.setImageBitmap((Bitmap) m.obj);
             }
         };
-        Thread t = new Thread() {
+
+        final Thread t = new Thread() {
             @Override
             public void run() {
                 // Load image from URI on background thread

@@ -112,9 +112,6 @@ public class EditShoeFrag extends Fragment {
                 dataSrc.open();
 
                 dataSrc.setImageUri(finalUri, mShoe.getId());
-                // Notify everyone that the database has new content
-                Intent update = new Intent(ViewShoeActivity.ACTION_DB_UPDATED);
-                mContext.sendBroadcast(update);
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
             } finally {
