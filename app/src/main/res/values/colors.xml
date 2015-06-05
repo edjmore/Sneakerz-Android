@@ -5,4 +5,5 @@
     <color name="white">#eeffffff</color>
     <color name="grey">#eeaaaaaa</color>
     <color name="secondary_theme_blue">#0CAAC2</color>
+    <color name="accent_green">#36C267</color>
 </resources>

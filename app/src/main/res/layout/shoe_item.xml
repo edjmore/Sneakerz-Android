@@ -18,11 +18,11 @@
         android:id="@+id/shoe_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2.5"
+        android:layout_weight="2"
         android:gravity="center_vertical"
         android:padding="16dp"
         android:text="@string/hello_world"
-        android:textSize="32sp" />
+        android:textSize="26sp" />
 
     <LinearLayout
         android:layout_width="0dp"

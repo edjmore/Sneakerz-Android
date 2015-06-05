@@ -31,7 +31,7 @@
             android:layout_height="56dp"
             android:layout_gravity="bottom|right"
             android:layout_margin="8dp"
-            android:background="@drawable/blue_circle"
+            android:background="@drawable/green_circle"
             android:shadowRadius="16"
             custom:customIcon="@drawable/ic_action_accept"
             custom:customIconSize="64" />

@@ -3,14 +3,14 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="0.8">
 
         <TextView
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:layout_height="56dp"
             android:layout_gravity="bottom|right"
             android:layout_margin="8dp"
-            android:background="@drawable/blue_circle"
+            android:background="@drawable/green_circle"
             android:shadowRadius="16"
             custom:customIcon="@drawable/ic_action_accept"
             custom:customIconSize="64" />
