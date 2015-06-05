@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -73,7 +74,7 @@ public class ShoeCursorAdapter extends CursorAdapter {
         // URI guaranteed to be valid
         final Uri uri = shoe.getImageUri() == null ? mDefUri : shoe.getImageUri();
         // Temporarily set no image so we only load one
-        imageView.setImageURI(Uri.EMPTY);
+        imageView.setImageDrawable(new BitmapDrawable());
         // Fetch and set image on background thread
         bmpManager.fetchBitmapAsync(uri, imageView);
     }

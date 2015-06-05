@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -137,9 +138,6 @@ public class MainActivity extends ActionBarActivity {
                 String input = editName.getText().toString();
                 // Dismiss the popup
                 mPopupWindow.dismiss();
-                // Restore backround
-                FrameLayout root = (FrameLayout) findViewById(R.id.main_root);
-                root.getForeground().setAlpha(0); // 0 is transparent
 
                 boolean success = createNewShoe(input);
                 // Let user know if new shoe was added
@@ -155,6 +153,17 @@ public class MainActivity extends ActionBarActivity {
         // Use screen dimensions to calculate popup window size
         mPopupWindow = new PopupWindow(popupView, (int) (mDisplaySize.x * 0.85),
                 ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        // Want to dismiss the window when user taps outside of it
+        mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
+        mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                // Restore backround
+                FrameLayout root = (FrameLayout) findViewById(R.id.main_root);
+                root.getForeground().setAlpha(0); // 0 is transparent
+            }
+        });
         // Show ar center of shoe list view
         mPopupWindow.showAtLocation(findViewById(R.id.main_shoe_list),
                 Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, (int) (mDisplaySize.y * 0.25));
