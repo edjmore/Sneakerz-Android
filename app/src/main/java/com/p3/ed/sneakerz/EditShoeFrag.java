@@ -180,7 +180,7 @@ public class EditShoeFrag extends Fragment {
         mEditDist.setHint(mShoe.getDist(mUnits));
         // Units
         TextView units = (TextView) root.findViewById(R.id.edit_shoe_dist_desc);
-        units.setText(mUnits);
+        units.setText("Initial " + mUnits);
         // Image
         mImageView = (ImageView) root.findViewById(R.id.edit_shoe_image);
         mImageView.setOnClickListener(mIvClkListener);
@@ -231,6 +231,8 @@ public class EditShoeFrag extends Fragment {
                 args.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoeId);
                 runHistFrag.setArguments(args);
 
+                refreshActivity();
+
                 getFragmentManager().beginTransaction().replace(R.id.view_shoe_frag_container,
                         runHistFrag).commit();
             }
@@ -244,8 +246,11 @@ public class EditShoeFrag extends Fragment {
                 try {
                     dataSrc.open();
 
-                    // Delete shoe and return to main activity
+                    // Delete shoe
                     dataSrc.deleteShoe(mShoeId);
+                    // Let user know the shoe was removed from database
+                    Toast.makeText(mContext, mShoe.name + " deleted.", Toast.LENGTH_SHORT).show();
+                    // Return to main activity
                     Intent main = new Intent(mContext, MainActivity.class);
                     startActivity(main);
                 } catch (SQLException sqle) {
@@ -255,5 +260,16 @@ public class EditShoeFrag extends Fragment {
                 }
             }
         });
+    }
+
+    private void refreshActivity() {
+        // I don't like this, it's kinda hacky
+        // Could replace with an interface, but that's more work...
+        Activity activity;
+        if ((activity = getActivity()) instanceof ViewShoeActivity) {
+            ViewShoeActivity vsa = (ViewShoeActivity) activity;
+            // Refresh data and views
+            vsa.refresh();
+        }
     }
 }

@@ -73,8 +73,6 @@ public class ShoeCursorAdapter extends CursorAdapter {
         final ImageView imageView = (ImageView) view.findViewById(R.id.shoe_item_image);
         // URI guaranteed to be valid
         final Uri uri = shoe.getImageUri() == null ? mDefUri : shoe.getImageUri();
-        // Temporarily set no image so we only load one
-        imageView.setImageDrawable(new BitmapDrawable());
         // Fetch and set image on background thread
         bmpManager.fetchBitmapAsync(uri, imageView);
     }

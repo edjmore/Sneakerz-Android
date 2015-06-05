@@ -87,29 +87,7 @@ public class ViewShoeActivity extends ActionBarActivity {
         super.onDestroy();
     }
 
-    private void init() {
-        mContext = this;
-        mBmpManager = new BitmapManager(mContext);
-        mImageView = (ImageView) findViewById(R.id.view_shoe_image);
-        mActionBar = getSupportActionBar();
-        mDistText = (TextView) findViewById(R.id.view_shoe_dist);
-        mDistDesc = (TextView) findViewById(R.id.view_shoe_dist_desc);
-    }
-
-    private Shoe fetchShoe() {
-        DataSrc dataSrc = new DataSrc(mContext);
-        try {
-            dataSrc.open();
-            return dataSrc.getShoe(mShoeId);
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            return null;
-        } finally {
-            if (dataSrc.isOpen()) dataSrc.close();
-        }
-    }
-
-    private void refresh() {
+    public void refresh() {
         // Most recent shoe data
         Shoe shoe = fetchShoe();
 
@@ -130,5 +108,27 @@ public class ViewShoeActivity extends ActionBarActivity {
 
         // Name of shoe
         mActionBar.setTitle(shoe.name);
+    }
+
+    private void init() {
+        mContext = this;
+        mBmpManager = new BitmapManager(mContext);
+        mImageView = (ImageView) findViewById(R.id.view_shoe_image);
+        mActionBar = getSupportActionBar();
+        mDistText = (TextView) findViewById(R.id.view_shoe_dist);
+        mDistDesc = (TextView) findViewById(R.id.view_shoe_dist_desc);
+    }
+
+    private Shoe fetchShoe() {
+        DataSrc dataSrc = new DataSrc(mContext);
+        try {
+            dataSrc.open();
+            return dataSrc.getShoe(mShoeId);
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            return null;
+        } finally {
+            if (dataSrc.isOpen()) dataSrc.close();
+        }
     }
 }

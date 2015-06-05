@@ -142,10 +142,10 @@ public class MainActivity extends ActionBarActivity {
                 boolean success = createNewShoe(input);
                 // Let user know if new shoe was added
                 if (success) {
-                    Toast.makeText(mContext, "\'" + input + "\' added!", Toast.LENGTH_SHORT);
+                    Toast.makeText(mContext, "\'" + input + "\' added!", Toast.LENGTH_SHORT).show();
                     refresh();
                 } else {
-                    Toast.makeText(mContext, "Shoe not added.", Toast.LENGTH_SHORT);
+                    Toast.makeText(mContext, "Shoe not added.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
