@@ -1,10 +1,11 @@
 package com.p3.ed.sneakerz;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,36 +27,6 @@ public class NewRunFrag extends Fragment {
     private NumberPicker mTensPicker, mOnesPicker, mTenthsPicker;
     private double mRunDist = 0;
     private String mUnits;
-
-    private final Runnable writeBack = new Runnable() {
-        @Override
-        public void run() {
-            // Don't care about zero distance runs
-            if (mRunDist != 0) {
-                DataSrc dataSrc = new DataSrc(mContext);
-                try {
-                    dataSrc.open();
-
-                    double miles = mRunDist;
-                    // If in kilometers mode, convert user input to miles
-                    if (mUnits.equals("kilometers")) {
-                        miles = mRunDist / 1.609344; // kilometers per mile
-                    }
-                    // Add a new run to the database
-                    dataSrc.addRun(mShoeId, miles);
-
-                    Shoe shoe = dataSrc.getShoe(mShoeId);
-                    // Update data for this shoe
-                    double newMiles = shoe.miles + miles;
-                    dataSrc.updateShoe(shoe.name, newMiles, shoe.getId());
-                } catch (SQLException sqle) {
-                    sqle.printStackTrace();
-                } finally {
-                    if (dataSrc.isOpen()) dataSrc.close();
-                }
-            }
-        }
-    };
 
     @Override
     public void setArguments(Bundle args) {
@@ -83,14 +54,16 @@ public class NewRunFrag extends Fragment {
             public void onClick(View view) {
                 mRunDist = 10.0 * mTensPicker.getValue() + mOnesPicker.getValue() + mTenthsPicker.getValue() / 10.0;
 
-                Thread t = new Thread(writeBack);
-                t.start();
+                // TODO: This used to be on a new thread, but I don't think it is necessary
+                writeBack();
 
                 // Switch to run history fragment
                 RunHistFrag runHistFrag = new RunHistFrag();
                 Bundle args = new Bundle();
                 args.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoeId);
                 runHistFrag.setArguments(args);
+
+                refreshActivity();
 
                 getFragmentManager().beginTransaction().replace(R.id.view_shoe_frag_container,
                         runHistFrag).commit();
@@ -101,5 +74,43 @@ public class NewRunFrag extends Fragment {
         mUnits = prefs.getString("key_pref_dist", "miles");
         TextView distDescView = (TextView) getView().findViewById(R.id.new_run_dist_desc);
         distDescView.setText(mUnits);
+    }
+
+    private void refreshActivity() {
+        // I don't like this, it's kinda hacky
+        // Could replace with an interface, but that's more work...
+        Activity activity;
+        if ((activity = getActivity()) instanceof ViewShoeActivity) {
+            ViewShoeActivity vsa = (ViewShoeActivity) activity;
+            // Refresh data and views
+            vsa.refresh();
+        }
+    }
+
+    private void writeBack() {
+        // Don't care about zero distance runs
+        if (mRunDist != 0) {
+            DataSrc dataSrc = new DataSrc(mContext);
+            try {
+                dataSrc.open();
+
+                double miles = mRunDist;
+                // If in kilometers mode, convert user input to miles
+                if (mUnits.equals("kilometers")) {
+                    miles = mRunDist / 1.609344; // kilometers per mile
+                }
+                // Add a new run to the database
+                dataSrc.addRun(mShoeId, miles);
+
+                Shoe shoe = dataSrc.getShoe(mShoeId);
+                // Update data for this shoe
+                double newMiles = shoe.miles + miles;
+                dataSrc.updateShoe(shoe.name, newMiles, shoe.getId());
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+            } finally {
+                if (dataSrc.isOpen()) dataSrc.close();
+            }
+        }
     }
 }
