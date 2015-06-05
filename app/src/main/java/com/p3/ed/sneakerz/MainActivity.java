@@ -1,6 +1,5 @@
 package com.p3.ed.sneakerz;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;

@@ -226,8 +226,13 @@ public class EditShoeFrag extends Fragment {
                 }
 
                 // Switch to run history fragment
-                Intent viewHist = new Intent(ViewShoeActivity.ACTION_VIEW_HIST);
-                mContext.sendBroadcast(viewHist);
+                RunHistFrag runHistFrag = new RunHistFrag();
+                Bundle args = new Bundle();
+                args.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoeId);
+                runHistFrag.setArguments(args);
+
+                getFragmentManager().beginTransaction().replace(R.id.view_shoe_frag_container,
+                        runHistFrag).commit();
             }
         });
 

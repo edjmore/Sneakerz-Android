@@ -53,10 +53,6 @@ public class NewRunFrag extends Fragment {
                 } finally {
                     if (dataSrc.isOpen()) dataSrc.close();
                 }
-
-                Intent dbUpdated = new Intent();
-                dbUpdated.setAction(ViewShoeActivity.ACTION_DB_UPDATED);
-                mContext.sendBroadcast(dbUpdated);
             }
         }
     };
@@ -90,9 +86,14 @@ public class NewRunFrag extends Fragment {
                 Thread t = new Thread(writeBack);
                 t.start();
 
-                Intent viewHist = new Intent();
-                viewHist.setAction(ViewShoeActivity.ACTION_VIEW_HIST);
-                mContext.sendBroadcast(viewHist);
+                // Switch to run history fragment
+                RunHistFrag runHistFrag = new RunHistFrag();
+                Bundle args = new Bundle();
+                args.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoeId);
+                runHistFrag.setArguments(args);
+
+                getFragmentManager().beginTransaction().replace(R.id.view_shoe_frag_container,
+                        runHistFrag).commit();
             }
         });
 

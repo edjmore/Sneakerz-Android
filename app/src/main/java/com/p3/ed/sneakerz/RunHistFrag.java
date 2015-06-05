@@ -60,9 +60,13 @@ public class RunHistFrag extends Fragment {
         addRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addRun = new Intent();
-                addRun.setAction(ViewShoeActivity.ACTION_ADD_RUN);
-                mContext.sendBroadcast(addRun);
+                NewRunFrag newRunFrag = new NewRunFrag();
+                Bundle args = new Bundle();
+                args.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoeId);
+                newRunFrag.setArguments(args);
+
+                getFragmentManager().beginTransaction().replace(R.id.view_shoe_frag_container,
+                        newRunFrag).commit();
             }
         });
     }

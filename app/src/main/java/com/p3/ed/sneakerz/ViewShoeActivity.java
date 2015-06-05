@@ -1,5 +1,6 @@
 package com.p3.ed.sneakerz;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,39 +39,6 @@ public class ViewShoeActivity extends ActionBarActivity {
     private TextView mDistText;
     private TextView mDistDesc;
 
-    public static final String ACTION_ADD_RUN = "com.p3.ed.action.ADD_RUN",
-            ACTION_VIEW_HIST = "com.p3.ed.action.VIEW_HIST";
-    public static final String ACTION_DB_UPDATED = "com.p3.ed.action.DP_UPDATED";
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            FragmentManager fm = getFragmentManager();
-
-            switch (intent.getAction()) {
-                case ACTION_ADD_RUN:
-                    NewRunFrag newRunFrag = new NewRunFrag();
-                    newRunFrag.setArguments(mArgs);
-                    fm.beginTransaction().replace(R.id.view_shoe_frag_container, newRunFrag)
-                            .commit();
-                    break;
-
-                case ACTION_VIEW_HIST:
-                    RunHistFrag runHistFrag = new RunHistFrag();
-                    runHistFrag.setArguments(mArgs);
-                    fm.beginTransaction().replace(R.id.view_shoe_frag_container, runHistFrag)
-                            .commit();
-
-                    refresh();
-                    break;
-
-                case ACTION_DB_UPDATED:
-                    refresh();
-                    break;
-            }
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,12 +56,6 @@ public class ViewShoeActivity extends ActionBarActivity {
         mArgs.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoeId);
         runHistFrag.setArguments(mArgs);
         fm.beginTransaction().add(R.id.view_shoe_frag_container, runHistFrag).commit();
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_ADD_RUN);
-        filter.addAction(ACTION_VIEW_HIST);
-        filter.addAction(ACTION_DB_UPDATED);
-        registerReceiver(mReceiver, filter);
     }
 
     @Override
@@ -121,7 +84,6 @@ public class ViewShoeActivity extends ActionBarActivity {
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 
