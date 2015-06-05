@@ -140,8 +140,8 @@ public class DataSrc {
 
     public Cursor getAllRunsForShoe(int shoeId) {
         String selectClause = DbHelper.RUNS_SHOE_ID + " = ?";
-        // Sort by date
-        String orderBy = DbHelper.RUNS_DATE;
+        // Sort by date (most recent first)
+        String orderBy = DbHelper.RUNS_DATE + " DESC";
 
         return mDb.query(DbHelper.TABLE_RUNS, ALL_RUN_COLUMNS, selectClause,
                 new String[]{String.valueOf(shoeId)}, null, null, orderBy);

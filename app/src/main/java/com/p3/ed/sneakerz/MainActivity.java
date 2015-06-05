@@ -164,7 +164,8 @@ public class MainActivity extends ActionBarActivity {
                 root.getForeground().setAlpha(0); // 0 is transparent
             }
         });
-        // Show ar center of shoe list view
+
+        // Show at center of shoe list view
         mPopupWindow.showAtLocation(findViewById(R.id.main_shoe_list),
                 Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, (int) (mDisplaySize.y * 0.25));
         // Dim the background
