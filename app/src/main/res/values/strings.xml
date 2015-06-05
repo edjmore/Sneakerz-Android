@@ -3,7 +3,7 @@
     <string name="app_name">Sneakerz</string>
     <string name="hello_world">Hello World!</string>
     <string name="shoe_name_input_hint">Enter shoe name</string>
-    <string name="add_shoe">+ Shoe</string>
+    <string name="new_shoe">New Sneakerz</string>
     <string name="miles">miles</string>
     <string name="km">kilometers</string>
     <string name="add_run">+ Run</string>
