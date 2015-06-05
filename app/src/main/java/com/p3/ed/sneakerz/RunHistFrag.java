@@ -1,5 +1,6 @@
 package com.p3.ed.sneakerz;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,18 @@ public class RunHistFrag extends Fragment {
     @Override
     public void setArguments(Bundle args) {
         mShoeId = args.getInt(ViewShoeActivity.KEY_SHOE_ID);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // I don't like this, it's kinda hacky
+        // Could replace with an interface, but that's more work...
+        if (activity instanceof ViewShoeActivity) {
+            ViewShoeActivity vsa = (ViewShoeActivity) activity;
+            // Refresh data and views
+            vsa.refresh();
+        }
     }
 
     @Override

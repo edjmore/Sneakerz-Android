@@ -231,8 +231,6 @@ public class EditShoeFrag extends Fragment {
                 args.putInt(ViewShoeActivity.KEY_SHOE_ID, mShoeId);
                 runHistFrag.setArguments(args);
 
-                refreshActivity();
-
                 getFragmentManager().beginTransaction().replace(R.id.view_shoe_frag_container,
                         runHistFrag).commit();
             }
@@ -260,16 +258,5 @@ public class EditShoeFrag extends Fragment {
                 }
             }
         });
-    }
-
-    private void refreshActivity() {
-        // I don't like this, it's kinda hacky
-        // Could replace with an interface, but that's more work...
-        Activity activity;
-        if ((activity = getActivity()) instanceof ViewShoeActivity) {
-            ViewShoeActivity vsa = (ViewShoeActivity) activity;
-            // Refresh data and views
-            vsa.refresh();
-        }
     }
 }
