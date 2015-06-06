@@ -42,8 +42,6 @@ public class EditShoeFrag extends Fragment {
     private String mUnits;
     private Shoe mShoe;
 
-    private EditShoeFrag mFrag;
-
     private Uri mTempUri;
     private Bitmap mImgBmp;
 
@@ -168,7 +166,6 @@ public class EditShoeFrag extends Fragment {
         mContext = getActivity();
         mActivity = getActivity();
         mGuiHandler = new Handler();
-        mFrag = this;
 
         // Get user prefs
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
