@@ -122,9 +122,11 @@ public class EditShoeFrag extends Fragment {
                 dataSrc.setImageUri(finalUri, mShoe.getId());
 
                 // Delete the old image
-                File old = new File(oldUri.getPath());
-                if (old.exists()) {
-                    old.delete();
+                if (oldUri != null) { // could be null if default image
+                    File old = new File(oldUri.getPath());
+                    if (old.exists()) {
+                        old.delete();
+                    }
                 }
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
