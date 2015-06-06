@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +34,15 @@ import java.sql.SQLException;
  * Created by Ed on 6/4/15.
  */
 public class EditShoeFrag extends Fragment {
+    private static final String TAG = "EditShoeTag";
 
     private int mShoeId;
     private Context mContext;
     private Activity mActivity;
     private String mUnits;
     private Shoe mShoe;
+
+    private EditShoeFrag mFrag;
 
     private Uri mTempUri;
     private Bitmap mImgBmp;
@@ -81,6 +85,10 @@ public class EditShoeFrag extends Fragment {
     private final Runnable mHandleNewImage = new Runnable() {
         @Override
         public void run() {
+            // Get handle on large image view
+            final ImageView lrgImgView = (ImageView) getActivity()
+                    .findViewById(R.id.view_shoe_image);
+
             File pubDir =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File temp = null;
@@ -110,8 +118,16 @@ public class EditShoeFrag extends Fragment {
             DataSrc dataSrc = new DataSrc(mContext);
             try {
                 dataSrc.open();
+                Uri oldUri = mShoe.getImageUri();
 
+                // Save image location to database
                 dataSrc.setImageUri(finalUri, mShoe.getId());
+
+                // Delete the old image
+                File old = new File(oldUri.getPath());
+                if (old.exists()) {
+                    old.delete();
+                }
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
             } finally {
@@ -152,6 +168,7 @@ public class EditShoeFrag extends Fragment {
         mContext = getActivity();
         mActivity = getActivity();
         mGuiHandler = new Handler();
+        mFrag = this;
 
         // Get user prefs
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);

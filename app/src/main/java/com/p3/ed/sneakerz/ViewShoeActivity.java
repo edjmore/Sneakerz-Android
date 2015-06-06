@@ -9,9 +9,11 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,6 +27,7 @@ import java.sql.SQLException;
  * Created by Ed on 6/1/15.
  */
 public class ViewShoeActivity extends ActionBarActivity {
+    private static final String TAG = "ViewShoeActivity";
 
     public static final String KEY_SHOE_ID = "shoe_id";
     private Bundle mArgs;
@@ -50,6 +53,7 @@ public class ViewShoeActivity extends ActionBarActivity {
         init();
         refresh();
 
+        // Default to run history fragment
         FragmentManager fm = getFragmentManager();
         RunHistFrag runHistFrag = new RunHistFrag();
         mArgs = new Bundle();
@@ -80,11 +84,6 @@ public class ViewShoeActivity extends ActionBarActivity {
                 return true;
         }
         return false;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     public void refresh() {
