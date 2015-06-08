@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -68,6 +69,17 @@ public class RunHistFrag extends Fragment {
         } finally {
             if (dataSrc.isOpen()) dataSrc.close();
         }
+
+        runList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int runId = view.getId();
+                Intent viewRun = new Intent(mContext, ViewRunActivity.class);
+                viewRun.putExtra(ViewRunActivity.KEY_RUN_ID, runId);
+
+                startActivity(viewRun);
+            }
+        });
 
         Button addRunButton = (Button) getView().findViewById(R.id.run_hist_add_run);
         addRunButton.setOnClickListener(new View.OnClickListener() {

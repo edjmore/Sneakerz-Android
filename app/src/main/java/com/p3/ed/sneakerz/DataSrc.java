@@ -133,6 +133,16 @@ public class DataSrc {
         return Run.cursorToRun(cursor, indices);
     }
 
+    public Run getRun(int runId) {
+        String selectClause = DbHelper.RUNS_ID + " = ?";
+        Cursor cursor = mDb.query(DbHelper.TABLE_RUNS, ALL_RUN_COLUMNS, selectClause,
+                new String[]{String.valueOf(runId)}, null, null, null);
+        cursor.moveToNext();
+        int[] indices = DbHelper.getColIndices(cursor, DbHelper.TABLE_RUNS);
+
+        return Run.cursorToRun(cursor, indices);
+    }
+
     public void deleteRun(int _id) {
         String whereClause = DbHelper.RUNS_ID + " = ?";
         mDb.delete(DbHelper.TABLE_RUNS, whereClause, new String[]{String.valueOf(_id)});

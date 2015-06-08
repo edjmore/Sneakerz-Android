@@ -41,6 +41,7 @@ public class RunCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         Run run = Run.cursorToRun(cursor, mIndices);
+        view.setId(run.getId());
 
         TextView distView = (TextView) view.findViewById(R.id.run_item_dist);
         distView.setText(run.getDist(mUnits));

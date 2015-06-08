@@ -22,6 +22,7 @@
 
         <activity
             android:name=".ViewShoeActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
@@ -37,6 +38,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
+        <activity
+            android:name=".ViewRunActivity"
+            android:parentActivityName=".ViewShoeActivity"
+            android:screenOrientation="portrait"></activity>
 
     </application>
 
