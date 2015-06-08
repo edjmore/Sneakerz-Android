@@ -27,6 +27,15 @@ public class Shoe {
         return imgUri;
     }
 
+    public void deleteImage() {
+        if (imgUri != null) {
+            File old = new File(imgUri.getPath());
+            if (old.exists()) {
+                old.delete();
+            }
+        }
+    }
+
     public String getDist(String units) {
         DecimalFormat df = new DecimalFormat("0.0");
         if (units.equals("miles")) {

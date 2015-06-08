@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.Date;
 

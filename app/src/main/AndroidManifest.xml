@@ -44,6 +44,11 @@
             android:parentActivityName=".ViewShoeActivity"
             android:screenOrientation="portrait"></activity>
 
+        <activity
+            android:name=".EditRunActivity"
+            android:parentActivityName=".ViewRunActivity"
+            android:screenOrientation="portrait"></activity>
+
     </application>
 
 </manifest>

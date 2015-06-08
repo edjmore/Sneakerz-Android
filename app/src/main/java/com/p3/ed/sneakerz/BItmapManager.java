@@ -35,7 +35,7 @@ public class BitmapManager {
         }
 
         // Temporarily set the image view to be blank so the default image from XML isn't loaded
-        dstView.setImageURI(Uri.EMPTY);
+        dstView.setImageDrawable(null);
 
         final Handler guiHandler = new Handler() {
             @Override

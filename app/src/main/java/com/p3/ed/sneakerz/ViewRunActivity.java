@@ -1,15 +1,14 @@
 package com.p3.ed.sneakerz;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.sql.SQLException;
 
@@ -35,9 +34,6 @@ public class ViewRunActivity extends ActionBarActivity {
         if (run != null) {
             refreshTextViews(run);
         }
-
-        ActionBar actionBar = getSupportActionBar();
-
     }
 
     private void init() {
@@ -85,11 +81,17 @@ public class ViewRunActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_edit:
-                // TODO: switch to edit mode
-                Toast.makeText(this, "Switching to edit mode...", Toast.LENGTH_SHORT).show();
+                startEditingActivity();
+
                 return true;
         }
 
         return false;
+    }
+
+    private void startEditingActivity() {
+        Intent edit = new Intent(this, EditRunActivity.class);
+        edit.putExtra(ViewRunActivity.KEY_RUN_ID, mRunId);
+        startActivity(edit);
     }
 }
